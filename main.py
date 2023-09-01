@@ -1153,7 +1153,7 @@ def get_player_info_limit(limit):
 
 
 @app.route('/home/')
-def index():
+def index2():
     return view_rosters()
 
 @app.route('/admin')

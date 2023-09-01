@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+	
+	<div class="alert alert-warning alert-dismissible fade show" role="alert">
+	  {{ message }}
+	  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+
+	
+{% endfor %}
+<br>
+
+	<h1>Franchise Player</h1>
+	<br/>
+	<!-- <p>Id to Update: {{ id }}</p>
+	<p>Current User Id: {{ current_user.id }}</p> -->
+
+{% if current_user.id in alist %}
+<div class="shadow p-3 mb-5 bg-body rounded">
+	<form action="/rosterplayer/franchise/" method="POST">
+		{{ form.hidden_tag() }}
+
+		{{ form.player_id.label(class="form-label") }}
+
+		{{ form.player_id(class="form-control") }}
+		<br/>
+
+		{{ form.salary.label(class="form-label") }}
+
+		{{ form.salary(class="form-control") }}
+		<br/>
+		
+		<!-- {{ form.team.label(class="form-label") }}
+
+		{{ form.team(class="form-control") }}
+		<br/> -->
+
+		{{ form.season.label(class="form-label") }}
+
+		{{ form.season(class="form-control") }}
+		<br/>
+
+		{{ form.note.label(class="form-label") }}
+
+		{{ form.note(class="form-control") }}
+		<br/>
+
+		{{ form.date_added.label(class="form-label") }}
+
+		{{ form.date_added(class="datepicker") }}
+		<br/>
+
+		<!-- {{ form.date_removed.label(class="form-label") }}
+
+		{{ form.date_removed(class="datepicker") }}
+		<br/> -->
+
+		<br/>
+		
+		{{ form.submit(class="btn btn-secondary") }}
+
+
+	</form>
+</div>
+
+{% else %}
+<link href="{{ url_for('static', filename='css/sign.css') }}" rel="stylesheet">
+
+<img src="{{ url_for('static', filename='images/flag.jpg') }}" alt="Flag on the Play">
+<br>
+<br>
+You do not have admin access. 
+{% endif %}
+<br/><br/><br/>
+
+
+
+{% endblock %}

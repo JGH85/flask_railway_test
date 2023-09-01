@@ -1,0 +1,108 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <img src="https://static.www.nfl.com/image/upload/v1554321393/league/nvfr7ogywskqrfaiu38m.svg" alt="" height="50">
+      <!-- <img src="{{url_for('static', filename='images/nfl.svg')}}" alt="" height="50"> -->
+
+      <a class="navbar-brand" href="#">Troy Siade Dynasty League 2023</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{{ url_for('index') }}">Home</a>
+          </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('getNFLState') }}">NFL State</a>
+          </li> -->
+          {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('dashboard') }}">Account</a>
+            </li>
+
+            <!-- {% if current_user.id in alist %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin') }}" style="color:red">Admin</a>
+            </li>
+            {% endif %} -->
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('add_user') }}">Register</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+            </li>
+          {% endif %}
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Teams
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{{ url_for('view_rosters') }}">Teams Overview</a></li>
+            
+              <li><hr class="dropdown-divider"></li>
+
+              {% for t in dropdown_teams%}
+              <li><a class="dropdown-item" href="{{ url_for('view_roster', id=t.id)}}">{{t.owner.teamname}}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('view_active_roster_players') }}">All Rostered Players</a>
+          </li> -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Reports</a>
+            <ul class="dropdown-menu">
+              <!-- <li><a class="dropdown-item" href="{{ url_for('add_post') }}">Add League Message</a></li> -->
+              <!-- <li><a class="dropdown-item" href="{{ url_for('posts') }}">Message Board</a></li> -->
+              <!-- <li><a class="dropdown-item" href="{{ url_for('view_rosters') }}">Teams</a></li> -->
+              <li><a class="dropdown-item" href="{{ url_for('view_active_roster_players') }}">All Rostered Players</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('view_franchised_roster_players') }}">Franchised Players</a></li>
+
+              
+              <!-- <li><hr class="dropdown-divider"></li> -->
+              <!-- <li><a class="dropdown-item" href="{{ url_for('add_user') }}">Users</a></li> -->
+              <!-- <li><a class="dropdown-item" href="{{ url_for('update_owners') }}">Update Owners</a></li> -->
+
+            </ul>
+          </li>
+          {% if current_user.id in alist %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color:red">
+              Admin Tools
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{{ url_for('admin') }}" style="color:red">Admin Home</a></li>
+
+              <li><a class="dropdown-item" href="{{ url_for('getNFLState') }}">NFL State</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('update_owners') }}">Owners</a></li>
+              
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{{ url_for('view_all_roster_players') }}">All Roster Players</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('editSalary') }}">Edit Salaries</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('getPlayers') }}">Add New Players</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('update_active_players') }}">Update All Players</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('add_user') }}">Users</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('add_rosters') }}">Rosters</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('process_transactions') }}">Process Transactions</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('load_initial_rosters_from_csv') }}" style="color:red">Initial CSV Load Transactions</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('export_current_rosters') }}">Export Rosters to CSV</a></li>
+            </ul>
+          </li>
+          {% endif %}
+          <!-- <li class="nav-item">
+            <a class="nav-link disabled">Disabled</a>
+          </li> -->
+        </ul>
+        <form method="POST" action="{{url_for('search')}}" class="d-flex" role="search">
+          {{ form.hidden_tag() }}
+          <input class="form-control me-2" type="search" placeholder="Player Search" aria-label="Search", name="searched">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+  </nav>

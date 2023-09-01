@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<br>
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>    
+{% endfor %}
+
+
+
+
+    {% if name %}
+        <h1>Hello {{name}}!</h1>
+    {% else %}
+        <h1>Edit Player Salary</h1>
+    <br>
+    <div class="shadow p-3 mb-5 bg-white rounded">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            {{ form.playername.label(class="form-label") }}
+            {{ form.playername(class="form-control") }}
+
+            {{ form.salary.label(class="form-label") }}
+            {{ form.salary(class="form-control") }}
+
+            {{ form.team.label(class="form-label") }}
+            {{ form.team(class="form-control") }}
+
+            <br>
+            {{ form.submit(class="btn btn-secondary") }}
+        </form>
+        {% endif %}
+    </div>
+
+<br><br><br><br><br>
+<table class="table table-hover table-striped">
+{% for p in our_players %}
+    <tr>
+    <td>{{p.id}}</td>
+    <td>{{p.full_name}}</td>
+    
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

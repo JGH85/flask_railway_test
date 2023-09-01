@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br>
+<h1>Troy Siade Dynasty Football League 2023</h1>
+
+<br>
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>    
+{% endfor %}
+
+
+
+
+{% if teams %}
+<table class="table table-hover table-striped table-sm">
+	<thead class="table">
+		<tr>
+		  <!-- <th scope="col">Team Number</th> -->
+		  <th scope="col"></th>
+		  <th scope="col"></th>
+		  
+		  <th scope="col">Salary Info</th>
+		  <th scope="col"></th>
+		  <th scope="col"></th>
+		  <th scope="col"></th>
+
+		  <th scope="col">Roster Info</th>
+		  <th scope="col"></th>
+		  <th scope="col"></th>
+  
+		</tr>
+	  </thead>
+	
+	<thead class="table-dark">
+	  <tr>
+		<!-- <th scope="col">Team Number</th> -->
+		<!-- <th scope="col"></th> -->
+		<th scope="col">Team Name</th>
+		
+		<th scope="col">Salary</th>
+		<th scope="col">Cap Holds</th>
+		<th scope="col">Used Cap</th>
+		<th scope="col">Cap Space</th>
+		<th scope="col"></th>
+		<th scope="col">Active Players</th>
+		<th scope="col">Roster Space</th>
+		<th scope="col">Taxi Players</th>
+
+	  </tr>
+	</thead>
+	<tbody>
+
+	{% for team in teams %}
+
+
+	  <tr style="transform: rotate(0);">
+		<!-- <th scope="row">{{team.id}}</th> -->
+
+		<!-- <th scope="row"><a href="{{ url_for('view_roster', id=team.id)}}" class="stretched-link"><img src="{{team.owner.avatar}}" height = 75></img></a></th> -->
+
+		<!-- <td class="align-middle"><img src="{{team.owner.avatar}}" height = 75></img></td> -->
+		<!-- <td class="align-middle"><a href="{{ url_for('view_roster', id=team.id)}}">{{team.owner.teamname}}</a></td> -->
+		<td class="align-middle">{{team.owner.teamname}}</td>
+
+		<td class="align-middle">{{team.active_roster_salary}}</a></td>
+		<td class="align-middle">{{team.cap_holds}}</a></td>
+		<td class="align-middle">{{team.used_cap}}</a></td>
+		<td class="align-middle">{{team.cap_space}}</a></td>
+		<td class="align-middle"></td>
+		<td class="align-middle">{{team.active_roster_count}}</a></td>
+		<td class="align-middle">{{team.roster_space}}</a></td>
+		<td class="align-middle">{{team.taxi_count}}</a></td>
+
+	</tr>
+
+	  {% endfor %}
+	  
+	</tbody>
+  </table>
+
+  {% else %}
+  <em>No results found.</em>
+
+  {% endif %}
+
+
+
+
+
+{% endblock %}
+

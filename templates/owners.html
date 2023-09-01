@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br>
+<h1>Owners</h1>
+
+<br>
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>    
+{% endfor %}
+
+
+
+
+{% if owners %}
+<table class="table table-hover table-striped table-sm">
+	<thead class="table-dark">
+	  <tr>
+		<th scope="col">Display Name</th>
+		<th scope="col">Team Name</th>
+		<th scope="col">Date Updated</th>
+		<th scope="col">User</th>
+		<th scope="col">Avatar</th>
+		<th scope="col">Edit</th>
+
+	  </tr>
+	</thead>
+	<tbody>
+
+	{% for owner in owners %}
+
+
+	  <tr>
+		<th scope="row">{{owner.display_name}}</th>
+		<td>{{owner.teamname}}</td>
+		<td>{{owner.date_updated}}</td>
+		<td>{{owner.user.name}}</td>
+		<td><img src="{{owner.avatar}}" height = 100></img></td>
+		<td><a href="{{ url_for('edit_owner', id=owner.id) }}">Edit</a></td>  
+	</tr>
+
+	  {% endfor %}
+	  
+	</tbody>
+  </table>
+
+  {% else %}
+  <em>No results found.</em>
+
+  {% endif %}
+
+
+
+
+
+{% endblock %}
+

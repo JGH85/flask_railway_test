@@ -1,0 +1,65 @@
+body {
+    background: #f4f4f4;
+    font-family: 'Libre Baskerville';
+    /* font-weight: 100; */
+}
+
+/* * {
+    font-family: Roboto;
+    font-weight: 200;
+
+} */
+
+li {
+    font-family: 'Roboto';
+    font-weight: 100;
+}
+
+h1 {
+    color: darkblue;
+    font-family: 'Playfair Display';
+    font-size: 30;
+}
+
+.table-numbers{
+    font-family: Roboto !important;
+}
+
+.table-numbers > thead {
+    font-family: 'Libre Baskerville';
+}
+
+#demo {
+    font-family: 'Roboto';
+    color: navy;
+    font-size: 10;
+}
+
+/* .mytesttable {
+    font-family: 'Times New Roman', Times, serif 
+} */
+
+/* .table-dark {
+    font-family: 'Playfair Display';
+} */
+
+.table {
+    font-family: 'Libre Baskerville';
+    /* font-family: Roboto; */
+}
+
+
+
+.used_cap {
+    color: red;
+    margin-bottom: 1px;
+}
+
+.cap_space {
+    color: darkblue;
+}
+
+
+/* #playernotes{
+
+} */

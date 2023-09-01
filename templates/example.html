@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>Example Template</title>
+    </head>
+    <body>
+        {% if myvar %}
+        <h1>Today's flavor is {{ myvar }}.</h1>
+        {% else %}
+        <h1>This is the example template.</h1>
+        {% endif %}
+
+        <p>Welcome to my blog</p>
+        <a href="https://www.youtube.com">Youtube</a>
+        <h3>End of page</h3>
+
+        {% for tuple in tuples %}
+        <a href="{{tuple[1]}}">{{tuple[0]}}</a>
+        {% endfor %}
+
+    </body>
+</html>

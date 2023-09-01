@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<br>
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>    
+{% endfor %}
+
+
+
+{% if email %}
+    <h1>Email: {{email}}</h1>
+    <h1>Password: {{password}}</h1>
+    <h2>Data found: </h2>
+    Name: {{pw_to_check.name}} <br>
+    Email: {{pw_to_check.email}} <br>
+    PW Hash: {{pw_to_check.password_hash}} <br>
+    Passed: {{passed}} <br>
+
+
+
+{% else %}
+<h1>What's your email and password?</h1>
+<br>
+<form method="POST">
+    {{ form.hidden_tag()}}
+    {{ form.email.label(class="form-label") }}
+    {{ form.email(class="form-control") }}
+    <br>
+    {{ form.password_hash.label(class="form-label") }}
+    {{ form.password_hash(class="form-control") }}
+    <br>
+    {{ form.submit(class="btn btn-secondary") }}
+</form>
+{% endif %}
+
+
+<p id ="demo">Example stuff.</p>
+
+<script src="{{url_for('static', filename='js/myfile.js')}}"></script>
+
+{% endblock %}

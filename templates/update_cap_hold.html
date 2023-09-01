@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% for message in get_flashed_messages() %}
+	
+	<div class="alert alert-warning alert-dismissible fade show" role="alert">
+	  {{ message }}
+	  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+
+	
+{% endfor %}
+<br>
+
+	<h1>Update Cap Hold</h1>
+	<br/>
+
+{% if current_user.id in alist %}
+<div class="shadow p-3 mb-5 bg-body rounded">
+	<form action="/caphold/update/{{ caphold_to_update.id }}" method="POST">
+		{{ form.hidden_tag() }}
+
+		{{ form.playername.label(class="form-label") }}
+
+		{{ form.playername(class="form-control-plaintext", value=caphold_to_update.player.full_name) }}
+		<br/>
+
+		{{ form.caphold.label(class="form-label") }}
+
+		{{ form.caphold(class="form-control", value=caphold_to_update.caphold) }}
+		<br/>
+		
+		{{ form.team.label(class="form-label") }}
+
+		{{ form.team(class="form-control", value=caphold_to_update.team_id) }}
+		<br/>
+
+		{{ form.season.label(class="form-label") }}
+
+		{{ form.season(class="form-control", value=caphold_to_update.season) }}
+		<br/>
+
+		{{ form.reason.label(class="form-label") }}
+
+		{{ form.reason(class="form-control", value=caphold_to_update.reason) }}
+		<br/>
+
+		{{ form.note.label(class="form-label") }}
+
+		{{ form.note(class="form-control", rows="3") }}
+		<br/>
+
+		{{ form.effective_date.label(class="form-label") }}
+
+		{{ form.effective_date(class="datepicker") }}
+		<br/>
+
+
+		<br/>
+		
+		{{ form.submit(class="btn btn-secondary") }}
+
+
+	</form>
+</div>
+
+{% else %}
+<link href="{{ url_for('static', filename='css/sign.css') }}" rel="stylesheet">
+
+<img src="{{ url_for('static', filename='images/flag.jpg') }}" alt="Flag on the Play">
+<br>
+<br>
+You do not have admin access. 
+{% endif %}
+<br/><br/><br/>
+
+
+
+{% endblock %}

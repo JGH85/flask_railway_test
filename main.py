@@ -34,9 +34,9 @@ metadata = MetaData(naming_convention=convention)
 app = Flask(__name__)
 
 
-@app.route('/')
-def index():
-    return jsonify({"Choo Choo": "Welcome to your Flask app 🚅"})
+# @app.route('/')
+# def index():
+#     return jsonify({"Choo Choo": "Welcome to your Flask app 🚅"})
 
 #add CKEditor for rich text text fields
 ckeditor = CKEditor(app)
@@ -1152,8 +1152,8 @@ def get_player_info_limit(limit):
 
 
 
-@app.route('/home/')
-def index2():
+@app.route('/')
+def index():
     return view_rosters()
 
 @app.route('/admin')

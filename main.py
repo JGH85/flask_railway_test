@@ -567,7 +567,7 @@ def view_roster(id):
     team_roster = RosterPlayer.query.filter(RosterPlayer.team_id == id, RosterPlayer.date_removed.is_(None), RosterPlayer.is_Taxi.is_(None)).order_by(RosterPlayer.salary.desc())
     taxi_roster = RosterPlayer.query.filter(RosterPlayer.team_id == id, RosterPlayer.date_removed.is_(None), RosterPlayer.is_Taxi == True).order_by(RosterPlayer.salary.desc())
 
-    roster_history = RosterPlayer.query.filter(RosterPlayer.team_id == id, RosterPlayer.date_removed.is_not(None), RosterPlayer.season == int(current_season)).order_by(RosterPlayer.date_removed.desc())
+    roster_history = RosterPlayer.query.filter(RosterPlayer.team_id == id, RosterPlayer.date_removed.isnot(None), RosterPlayer.season == int(current_season)).order_by(RosterPlayer.date_removed.desc())
 
     for rh in roster_history:
         print(f'{rh.player.full_name}, salary:{rh.salary}, date_removed:{rh.date_removed}')

@@ -500,7 +500,9 @@ def update_roster_ir_and_taxi():
         if r['taxi'] != None:
             taxi_ids = r['taxi']
         if taxi_ids:
-            for taxi in taxi_ids:
+            print("debugging taxi bug")
+            for taxi in taxi_ids:                
+                print(taxi)
                 # p = Player.query.filter_by(id=taxi).first()
                 # t = Team.query.filter_by(id=roster_id).first()
                 # flash(f'Team:{t.owner.teamname}, IR:{p.full_name}')

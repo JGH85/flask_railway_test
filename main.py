@@ -1634,8 +1634,9 @@ def process_transactions(source="Process Transactions"):
                                             cp.date_updated = datetime.utcnow()
                                             cp.associated_transaction_id = tid
                                             db.session.add(cp)
-                                            print(f"added player {cp.player.full_name} to caphold with hold of {cp.caphold}----------------------------")
-                                            added_cap_hold_count += 1
+                                            if cp:
+                                                print(f"added player {cp.player.full_name} to caphold with hold of {cp.caphold}----------------------------")
+                                                added_cap_hold_count += 1
                                         else:
                                             print(f'No caphold added, transaction date {transaction_dt} before season start')
                                         db.session.add(rp)                                        

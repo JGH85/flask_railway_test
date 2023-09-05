@@ -507,9 +507,10 @@ def update_roster_ir_and_taxi():
                 # t = Team.query.filter_by(id=roster_id).first()
                 # flash(f'Team:{t.owner.teamname}, IR:{p.full_name}')
                 rp = RosterPlayer.query.filter(RosterPlayer.team_id == roster_id, RosterPlayer.player_id == taxi, RosterPlayer.date_removed.is_(None)).first()
-                rp.is_Taxi = True
-                db.session.add(rp)
-                db.session.commit()
+                if rp:
+                    rp.is_Taxi = True
+                    db.session.add(rp)
+                    db.session.commit()
 
             
 

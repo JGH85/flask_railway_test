@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br>
+{% for message in get_flashed_messages() %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>    
+{% endfor %}
+
+<h1>All Transactions</h1> 
+{% if current_user.id in alist %}
+<!-- <form method="GET" action="{{url_for('addRosterPlayer')}}" class="d-flex">
+	{{ form.hidden_tag() }}	
+	<button class="btn btn-outline-info" type="submit">Add Player to Roster</button>
+  </form> -->
+<br>
+
+{% endif %}
+
+
+
+{% if transactions %}
+<table class="table table-hover table-striped table-sm">
+<!-- <table class="table"> -->
+
+
+	<thead class="table-dark">
+	  <tr>
+		<th scope="col">Id</th>
+		<th scope="col">Type</th>
+		<th scope="col">Season</th>
+		<th scope="col">Team</th>
+		<th scope="col">Dropped Player</th>
+		<th scope="col">Added Player</th>
+		<th scope="col">Transaction Date</th>
+		{% if current_user.id in alist %}
+		<th scope="col"></th>
+		<th scope="col"></th>
+		{% endif %}
+
+	  </tr>
+	</thead>
+	<tbody>
+
+	{% for t in transactions %}
+
+		
+		<th scope="row">
+			{{t.id}}			
+		</th>
+		<td>{{t.transaction_type}}</td>
+
+		<td>{{t.season}}</td>
+		<td>{{t.roster_id}}</td>
+		<td>{{t.dropped_player_id}}</td>
+		<td>{{t.added_player_id}}</td>
+		<td>{{t.transaction_date}}</td>
+
+		{% if current_user.id in alist %}
+		<!-- <td><a href="{{ url_for('updateRosterPlayer', id=t.id)}}">{{t.id}}</a></td> -->
+		<td><a href="{{ url_for('deleteTransaction', id=t.id)}}">Delete</a></td>
+		{% endif %}
+	</tr>
+
+	  {% endfor %}
+	  
+	</tbody>
+  </table>
+
+  {% else %}
+  <em>No results found.</em>
+  {% endif %}
+  <br>
+{% endblock %}
+

@@ -78,19 +78,25 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="{{ url_for('admin') }}" style="color:red">Admin Home</a></li>
 
-              <li><a class="dropdown-item" href="{{ url_for('getNFLState') }}">NFL State</a></li>
+              <!-- <li><a class="dropdown-item" href="{{ url_for('getNFLState') }}">NFL State</a></li> -->
               <li><a class="dropdown-item" href="{{ url_for('update_owners') }}">Owners</a></li>
               
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="{{ url_for('view_all_roster_players') }}">All Roster Players</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('view_all_transactions') }}">All Transactions</a></li>
               <li><a class="dropdown-item" href="{{ url_for('editSalary') }}">Edit Salaries</a></li>
               <li><a class="dropdown-item" href="{{ url_for('getPlayers') }}">Add New Players</a></li>
               <li><a class="dropdown-item" href="{{ url_for('update_active_players') }}">Update All Players</a></li>
               <li><a class="dropdown-item" href="{{ url_for('add_user') }}">Users</a></li>
               <li><a class="dropdown-item" href="{{ url_for('add_rosters') }}">Rosters</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('process_rookie_draft') }}">Process Rookie Draft</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('process_auction_draft') }}">Process Auction Draft</a></li>
               <li><a class="dropdown-item" href="{{ url_for('process_transactions') }}">Process Transactions</a></li>
               <li><a class="dropdown-item" href="{{ url_for('load_initial_rosters_from_csv') }}" style="color:red">Initial CSV Load Transactions</a></li>
               <li><a class="dropdown-item" href="{{ url_for('export_current_rosters') }}">Export Rosters to CSV</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('update_taxi') }}">Update Taxi Squads</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('update_roster_ir') }}">Update IR spots</a></li>
+
             </ul>
           </li>
           {% endif %}

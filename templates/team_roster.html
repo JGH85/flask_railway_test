@@ -276,7 +276,7 @@
   		  <td>{{ch.reason}}</td>
   		  <td>{{ch.effective_date}}</td>
 			{% if current_user.id in alist %}
-			<td><a href="{{ url_for('updateCapHold', id=ch.id)}}">{{ch.id}}</a></td>
+			<td><a href="{{ url_for('updateCapHold', id=ch.id)}}">Edit</a></td>
 			<td><a href="{{ url_for('deleteCapHold', id=ch.id)}}">Delete</a></td>
 			{% endif %}
 	  </tr>

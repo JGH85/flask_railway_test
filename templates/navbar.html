@@ -61,6 +61,8 @@
               <!-- <li><a class="dropdown-item" href="{{ url_for('posts') }}">Message Board</a></li> -->
               <!-- <li><a class="dropdown-item" href="{{ url_for('view_rosters') }}">Teams</a></li> -->
               <li><a class="dropdown-item" href="{{ url_for('view_active_roster_players') }}">All Rostered Players</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('view_active_cap_holds') }}">All Cap Holds</a></li>
+
               <li><a class="dropdown-item" href="{{ url_for('view_franchised_roster_players') }}">Franchised Players</a></li>
 
               
@@ -78,7 +80,7 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="{{ url_for('admin') }}" style="color:red">Admin Home</a></li>
 
-              <!-- <li><a class="dropdown-item" href="{{ url_for('getNFLState') }}">NFL State</a></li> -->
+              <li><a class="dropdown-item" href="{{ url_for('getNFLState') }}">NFL State</a></li>
               <li><a class="dropdown-item" href="{{ url_for('update_owners') }}">Owners</a></li>
               
               <li><hr class="dropdown-divider"></li>

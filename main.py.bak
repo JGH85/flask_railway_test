@@ -614,6 +614,11 @@ def view_rosters():
 
     return render_template('teams.html', teams=teams)
 
+@app.route('/capholdsactive/')
+def view_active_cap_holds():
+    active_cap_holds = CapHold.query.filter(CapHold.season == GetCurrentSeason()).order_by(CapHold.team_id.asc(), CapHold.effective_date.desc(), CapHold.caphold.desc())
+    return render_template('capholds.html', capholds = active_cap_holds)
+
 @app.route('/rosters/<int:id>')
 def view_roster(id):
     success = process_transactions("view_roster", method="week")
@@ -1034,6 +1039,8 @@ def franchiseRosterPlayer():
         form.date_added.data = datetime.today()
         return render_template('franchise_roster_player.html', form=form)
 
+
+    
 @app.route('/rosterplayer/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def deleteRosterPlayer(id):
@@ -1089,22 +1096,50 @@ def deleteTransaction(id):
         return redirect(url_for('view_all_transactions'))
     
 
+@app.route('/caphold/add/', methods = ['GET', 'POST'])
+@login_required
+def addCapHold():
+    form = CapHoldForm()
+    cp_to_add = CapHold()
+    # print(rp_to_update.full_name)
+    if request.method == "POST":
+        cp_to_add.player_id = request.form['player_id']
+        cp_to_add.caphold = request.form['caphold']
+        cp_to_add.season = request.form['season']
+        cp_to_add.team_id = request.form['team']
+        cp_to_add.note = request.form['note']
+        cp_to_add.reason = request.form['reason']
+        if request.form['effective_date'] == '':
+            cp_to_add.effective_date = None
+        else:
+            cp_to_add.effective_date = request.form['effective_date']
+        cp_to_add.date_updated = date.today()
+        db.session.add(cp_to_add)
+
+        try:
+            db.session.commit()
+            flash("Cap Hold added successfully.")
+            return redirect(url_for('view_active_cap_holds'))
+        except:
+            flash("Oops, that didn't work.")
+            return render_template('add_roster_player.html', form=form)
+    else:
+        team_choices = [(team.id, team.owner.teamname) for team in Team.query.order_by(Team.id).all()]
+        form.team.choices = team_choices
+        player_choices = [(player.id, f"{player.last_name}, {player.first_name}") for player in Player.query.order_by(Player.last_name, Player.first_name).all()]
+        form.player_id.choices = player_choices
+        last_season = int(current_season) - 1
+        seasons = [current_season, last_season]
+        form.season.choices = seasons   
+        form.note.data = "Added by commissioner"
+        return render_template('add_cap_hold.html', form=form)
+
 @app.route('/caphold/update/<int:id>', methods = ['GET', 'POST'])
 @login_required
 def updateCapHold(id):
     form = CapHoldForm()
     ch_to_update = CapHold.query.get_or_404(id)
 
-    # if form.validate_on_submit():
-    #         post.title = form.title.data
-    #         # post.author = form.author.data
-    #         post.slug = form.slug.data
-    #         post.content = form.content.data
-    #         # Update Database
-    #         db.session.add(post)
-    #         db.session.commit()
-    #         flash("Post Has Been Updated!")
-    #         return redirect(url_for('post', id=post.id))
     if request.method == "POST":
         ch_to_update.caphold = request.form['caphold']
         ch_to_update.team_id = request.form['team']
@@ -1115,8 +1150,6 @@ def updateCapHold(id):
             ch_to_update.effective_date = None
         else:
             ch_to_update.effective_date = request.form['effective_date']
-        
-        
         try:
             db.session.commit()
             flash("Roster Player updated successfully.")
@@ -1551,6 +1584,7 @@ def process_transactions(source="Process Transactions", method = "all"):
     if method == "week":
         if (MySys.last_transaction_update_date):
             difference = processed_date - MySys.last_transaction_update_date
+            print(f"last process transactions on {processed_date}")
             if difference.days == 0:
                 #if already updated today, return true
                 print("skipped processing transactions, already did them today")

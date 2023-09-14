@@ -591,8 +591,9 @@ def view_rosters():
 
         for r in team_roster:
             print(r.id)
-            if not r.is_ir and r.salary > 0:
-                roster_salary += r.salary
+            if not r.is_ir: 
+                if r.salary > 0:
+                    roster_salary += r.salary
                 if not r.is_Taxi:
                     active_roster_count += 1
             if r.is_Taxi:

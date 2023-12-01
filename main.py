@@ -487,7 +487,7 @@ def update_taxi(method="all"):
     old_taxi_players = RosterPlayer.query.filter(RosterPlayer.is_Taxi == True)
     for old_taxi_player in old_taxi_players:
         print(old_taxi_player.player.full_name)
-        old_taxi_player.is_Taxi = False
+        old_taxi_player.is_Taxi = None
         db.session.add(old_taxi_player)
         db.session.commit()
     
@@ -783,6 +783,80 @@ def export_current_rosters():
     flash(f"Exported {export_count} players to CSV")
     return redirect("/")
 
+
+@app.route('/exportcurrentrosterslocal/')
+def export_current_rosters_local():
+    export_count = 0
+    today = date.today().isoformat()
+    filename = f"Rosters{today}.csv"
+
+
+
+    # outputFile = open(filename, 'w', newline='')
+    # outputWriter = csv.writer(outputFile)
+    headers = ['Team Name','Player Name', 'Position', '2023 Salary']
+    # outputWriter.writerow(headers)
+    # sample_data = ['Resident Stevil','Lamar Jackson', 'QB', '23']
+        
+    output = StringIO()
+    csv_writer = csv.writer(output)
+    csv_writer.writerow(headers)
+    teams = Team.query.order_by(Team.id)
+    for team in teams:
+        team_roster = RosterPlayer.query.filter(RosterPlayer.team_id == team.id, RosterPlayer.season == current_season, RosterPlayer.date_removed.is_(None)).order_by(RosterPlayer.salary.desc())
+        
+        for rp in team_roster:
+            # name = rp.Player.fullname
+            datarow = [team.owner.teamname, rp.player.full_name, rp.player.position, rp.salary]
+            csv_writer.writerow(datarow)
+            export_count += 1
+    
+    # outputWriter.writerow(sample_data)
+
+    print("Test")
+    response = Response(output.getvalue())
+    response.headers['Content-Disposition']= 'attachment; filename="testloggpt.csv"'
+    response.headers['Content-Type']='text/csv'
+        # outputFile.close()
+    print("returning")
+    return response
+
+
+    # teams = Team.query.order_by(Team.id)
+    # for team in teams:
+    #     print(team.id)
+    # # # team_roster = RosterPlayer.query.filter_by(team_id = id).order_by(RosterPlayer.salary.desc())
+    #     team_roster = RosterPlayer.query.filter(RosterPlayer.team_id == team.id, RosterPlayer.date_removed.is_(None)).order_by(RosterPlayer.salary.desc())
+    
+
+        # for rp in team_roster:
+        #     rp_new = RosterPlayer()
+        #     rp_new.player_id = rp.player_id
+        #     rp.date_removed = datetime.utcnow()
+        #     rp.date_updated = datetime.utcnow()
+        #     #set season, make sure value is updated before this happens
+        #     rp_new.season = current_season
+        #     if rp.unadjusted_salary:
+        #         rp_new.salary = round_half_up(rp.unadjusted_salary * year_over_year_multiplier)
+        #     else:
+        #         rp_new.salary = round_half_up(rp.salary * year_over_year_multiplier)
+        #     rp_new.unadjusted_salary = 0
+        #     rp_new.date_added = datetime.utcnow()
+        #     rp_new.date_updated = datetime.utcnow()
+        #     rp_new.team_id = rp.team_id
+        #     rp_new.is_franchised = False
+        #     rp_new.is_ir = False
+        #     rp_new.note = f'Offseason processing July 2023'
+
+        #     db.session.add(rp)
+        #     db.session.add(rp_new)
+        #     db.session.commit()
+        #     player_migrated_count += 1
+
+    # flash(f"Exported {export_count} players to CSV")
+    # return redirect("/")
+
+
 @app.route('/rosterplayersactive/')
 def view_active_roster_players():
     update_roster_ir_and_taxi()
@@ -927,6 +1001,7 @@ def updateRosterPlayer(id):
     # print(rp_to_update.full_name)
     if request.method == "POST":
         rp_to_update.salary = request.form['salary']
+        rp_to_update.unadjusted_salary = request.form['unadjusted_salary']
         rp_to_update.team_id = request.form['team']
         if request.form['date_added'] == '':
             rp_to_update.date_added = None
@@ -1600,14 +1675,15 @@ def process_transactions(source="Process Transactions", method = "all"):
         missing_player_ids = []
 
         for i in range(week + 1):
+            print(f'current week: {week}, currently processing leg {i}')
             transaction_dates_list = []
             transaction_date_id_dict = {}
             transaction_week = i #this may not be a reliable number later in the year?
-            if method == "week" and i != week:
+            if method == "week" and i not in [week, week+1]:
                 print(f'only processing transactions for week {week}, skipping week {i}')
                 continue
             else:
-                print(f'only processing transactions for week {week}, these are week {i}')
+                print(f'current week {week}, processing transactions for week {i}')
 
 
 

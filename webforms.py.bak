@@ -79,7 +79,6 @@ class PlayerForm(FlaskForm):
 class PlayerRosterForm(FlaskForm):
     playername = StringField("Player")
     salary = DecimalField("Salary", validators=[DataRequired()])
-    unadjusted_salary = DecimalField("Unadjusted Salary")
     team = SelectField("Team", choices = [], coerce = int)
     date_added = DateTimeLocalField("Date Added", format = "%Y-%m-%d %H:%M")
     date_removed = DateTimeLocalField("Date Removed", format = "%Y-%m-%d %H:%M")
@@ -107,13 +106,12 @@ class FranchisePlayerRosterForm(FlaskForm):
 
 class CapHoldForm(FlaskForm):
     playername = StringField("Player")
-    player_id = SelectField("Player", choices = [])
     team = SelectField("Team", choices = [], coerce = int)
     caphold = DecimalField("Cap Hold", validators=[DataRequired()])
     season = IntegerField("Season", validators=[DataRequired()])
     reason = StringField("Reason", validators=[Length(max=20)])
     note = CKEditorField('Note')
-    effective_date = DateField("Effective Date", format = "%Y-%m-%d")
+    effective_date = DateTimeField("Effective Date", format = "%Y-%m-%d")
     submit = SubmitField("Submit")
 
 class SearchForm(FlaskForm):

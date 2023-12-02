@@ -64,9 +64,6 @@
               <li><a class="dropdown-item" href="{{ url_for('view_active_cap_holds') }}">All Cap Holds</a></li>
 
               <li><a class="dropdown-item" href="{{ url_for('view_franchised_roster_players') }}">Franchised Players</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('export_current_rosters_local') }}">Export Rosters to CSV</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('export_current_rosters_excel') }}">Export Rosters to Excel</a></li>
-
 
               
               <!-- <li><hr class="dropdown-divider"></li> -->

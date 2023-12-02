@@ -32,11 +32,6 @@
 
 		{{ form.salary(class="form-control", value=player_to_update.salary) }}
 		<br/>
-
-		{{ form.unadjusted_salary.label(class="form-label") }}
-
-		{{ form.unadjusted_salary(class="form-control", value=player_to_update.unadjusted_salary) }}
-		<br/>
 		
 		{{ form.team.label(class="form-label") }}
 

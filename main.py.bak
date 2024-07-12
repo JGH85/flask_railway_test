@@ -20,6 +20,9 @@ from decimal import Decimal
 import math
 from datetime import date  
 import pandas as pd
+from io import StringIO, BytesIO
+from werkzeug.wrappers import Response
+from openpyxl import Workbook 
 
 convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -855,6 +858,75 @@ def export_current_rosters_local():
 
     # flash(f"Exported {export_count} players to CSV")
     # return redirect("/")
+
+@app.route('/exportcurrentrostersexcel/')
+def export_current_rosters_excel():
+    export_count = 0
+    today = date.today().isoformat()
+    filename = f"Rosters{today}.xlsx"
+
+    wb = Workbook()
+
+
+    # outputFile = open(filename, 'w', newline='')
+    # outputWriter = csv.writer(outputFile)
+    headers = ['Team Name','Player Name', 'Position', '2023 Salary', 'IR Salary', 'Unadjusted Salary']
+    # outputWriter.writerow(headers)
+    # sample_data = ['Resident Stevil','Lamar Jackson', 'QB', '23']
+        
+    # output = StringIO()
+    # csv_writer = csv.writer(output)
+    # csv_writer.writerow(headers)
+    teams = Team.query.order_by(Team.id)
+    current_sheet = 1
+    for team in teams:   
+        salary_total = 0
+        team_roster = RosterPlayer.query.filter(RosterPlayer.team_id == team.id, RosterPlayer.season == current_season, RosterPlayer.date_removed.is_(None)).order_by(RosterPlayer.salary.desc())
+        if current_sheet ==1:
+            ws1 = wb.active
+            ws1.title = team.owner.teamname
+            ws1.append(headers)
+            for rp in team_roster:
+            # name = rp.Player.fullname
+                if rp.is_ir:
+                    datarow = [team.owner.teamname, rp.player.full_name, rp.player.position, '', rp.salary, rp.unadjusted_salary]
+                else:
+                    datarow = [team.owner.teamname, rp.player.full_name, rp.player.position, rp.salary, '',rp.unadjusted_salary]
+                    salary_total += rp.salary
+                ws1.append(datarow)
+                # csv_writer.writerow(datarow)
+            ws1.append(['Total','','',salary_total])
+            export_count += 1
+        else:
+            ws2 = wb.create_sheet(title=team.owner.teamname)
+            ws2.append(headers)
+            for rp in team_roster:
+            # name = rp.Player.fullname
+                if rp.is_ir:
+                    datarow = [team.owner.teamname, rp.player.full_name, rp.player.position, '', rp.salary, rp.unadjusted_salary]
+                else:
+                    datarow = [team.owner.teamname, rp.player.full_name, rp.player.position, rp.salary, '',rp.unadjusted_salary]
+                    salary_total += rp.salary
+                ws2.append(datarow)
+                # csv_writer.writerow(datarow)
+            ws2.append(['Total','','',salary_total])
+            export_count += 1
+        current_sheet += 1
+    
+    excel_data = BytesIO()
+    wb.save(excel_data)
+    excel_data.seek(0)
+
+    
+    # outputWriter.writerow(sample_data)
+
+    # Prepare the HTTP response
+    response = Response(excel_data.read())
+    response.headers['Content-Disposition'] = f'attachment; filename={filename}'
+    response.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+
+    print("returning")
+    return response
 
 
 @app.route('/rosterplayersactive/')

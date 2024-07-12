@@ -114,8 +114,10 @@ def page_not_found(e):
 admin_user_list = [1,2]
 UserId = "499807936168587264"
 Sport = "nfl"
-# LeagueId = "859990766557179904" # 2022
-LeagueId = "986829727832805376" # 2023
+# LeagueId = "859990766557179904" # 2022  
+# LeagueId = "986829727832805376" # 2023
+LeagueId = "1111386461611593728" # 2024
+
 #setup urls for API calls
 user_url = f'https://api.sleeper.app/v1/user/{UserId}'
 league_users_url = f'https://api.sleeper.app/v1/league/{LeagueId}/users'
@@ -495,22 +497,24 @@ def update_taxi(method="all"):
         db.session.commit()
     
     print("processing new taxi players")
-    #get Taxi and set new ones
-    for r in rosters:
-        roster_id = r['roster_id']
-        taxi_ids = ''
-        if r['taxi'] != None:
-            taxi_ids = r['taxi']
-        if taxi_ids:
-            for taxi in taxi_ids:
-                # p = Player.query.filter_by(id=taxi).first()
-                # t = Team.query.filter_by(id=roster_id).first()
-                # flash(f'Team:{t.owner.teamname}, IR:{p.full_name}')
-                rp = RosterPlayer.query.filter(RosterPlayer.team_id == roster_id, RosterPlayer.player_id == taxi, RosterPlayer.date_removed.is_(None)).first()
-                if rp:
-                    rp.is_Taxi = True
-                    db.session.add(rp)
-                    db.session.commit()
+    #don't process new taxi players if drops turned off
+    if MySys.allow_taxi_processing:
+        #get Taxi and set new ones
+        for r in rosters:
+            roster_id = r['roster_id']
+            taxi_ids = ''
+            if r['taxi'] != None:
+                taxi_ids = r['taxi']
+            if taxi_ids:
+                for taxi in taxi_ids:
+                    # p = Player.query.filter_by(id=taxi).first()
+                    # t = Team.query.filter_by(id=roster_id).first()
+                    # flash(f'Team:{t.owner.teamname}, IR:{p.full_name}')
+                    rp = RosterPlayer.query.filter(RosterPlayer.team_id == roster_id, RosterPlayer.player_id == taxi, RosterPlayer.date_removed.is_(None)).first()
+                    if rp:
+                        rp.is_Taxi = True
+                        db.session.add(rp)
+                        db.session.commit()
 
     #update system paramter for when last processed
     MySys.last_taxi_update_date = processed_date
@@ -591,7 +595,7 @@ def view_rosters():
         taxi_count = 0
         roster_salary = 0
         total_cap_holds = 0
-
+        print(t.id)
         for r in team_roster:
             print(r.id)
             if not r.is_ir: 
@@ -599,6 +603,7 @@ def view_rosters():
                     roster_salary += r.salary
                 if not r.is_Taxi:
                     active_roster_count += 1
+                    print(f'added to roster_count: {active_roster_count}')
             if r.is_Taxi:
                 taxi_count += 1
         for c in capholds:
@@ -2424,6 +2429,8 @@ class SystemSettings(db.Model):
     allow_transaction_processing = db.Column(db.Boolean)
     allow_capholds_for_drops = db.Column(db.Boolean)
     current_week = db.Column(db.Integer)
+    allow_taxi_processing = db.Column(db.Boolean)
+
 
 #a transaction which is a trade gets stored as multiple rows, 1 or more per team depending on number of players in trade
 class TradeTransaction(db.Model):

@@ -14,7 +14,7 @@ import uuid as uuid
 import os
 from dotenv import load_dotenv
 import smtplib
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import URLSafeTimedSerializer  as Serializer
 import csv
 from decimal import Decimal
 import math

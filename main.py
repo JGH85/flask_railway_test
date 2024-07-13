@@ -222,7 +222,7 @@ def add_user():
 		user = Users.query.filter_by(email=form.email.data).first()
 		if user is None:
 			## Hash the password!!!
-			hashed_pw = generate_password_hash(form.password_hash.data, "sha256")
+			hashed_pw = generate_password_hash(form.password_hash.data, 'pbkdf2:sha256')
 			user = Users(name=form.name.data, username=form.username.data,email=form.email.data, password_hash = hashed_pw)
 			db.session.add(user)
 			db.session.commit()

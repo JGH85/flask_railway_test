@@ -2300,7 +2300,10 @@ class Users(db.Model, UserMixin):
     def get_reset_token(self):
         # s = Serializer(secret_key, expires_in = 3600)
         s = Serializer(secret_key)
-        return s.dumps({'user_id':self.id}).decode('utf-8')
+        print()
+        # return s.dumps({'user_id':self.id}).decode('utf-8')
+        return s.dumps({'user_id':self.id})
+
 
     @staticmethod
     def verify_reset_token(token):

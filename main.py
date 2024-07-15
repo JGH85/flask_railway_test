@@ -720,7 +720,7 @@ def offseason_roster_update():
             rp_new.team_id = rp.team_id
             rp_new.is_franchised = False
             rp_new.is_ir = False
-            rp_new.note = f'Offseason processing July 2023'
+            rp_new.note = f'Offseason processing July 2024'
 
             db.session.add(rp)
             db.session.add(rp_new)

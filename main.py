@@ -705,7 +705,7 @@ def offseason_roster_update():
             #set season, make sure value is updated before this happens
             rp_new.season = current_season
 
-            if rp.is_Franchised:
+            if rp.is_franchised:
                 rp_new.salary = rp.unadjusted_salary #set franchised players back to previous acquired value
             else:
                 if rp.unadjusted_salary: #this would only be the case for salary holdovers from trades or something like that
@@ -722,6 +722,7 @@ def offseason_roster_update():
             rp_new.team_id = rp.team_id
             rp_new.is_franchised = False
             rp_new.is_ir = False
+            rp_new.is_Taxi = False
             rp_new.note = f'Offseason processing July {current_season}'
 
             db.session.add(rp)

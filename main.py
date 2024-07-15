@@ -595,15 +595,15 @@ def view_rosters():
         taxi_count = 0
         roster_salary = 0
         total_cap_holds = 0
-        print(t.id)
+        # print(t.id)
         for r in team_roster:
-            print(r.id)
+            # print(r.id)
             if not r.is_ir: 
                 if r.salary > 0:
                     roster_salary += r.salary
                 if not r.is_Taxi:
                     active_roster_count += 1
-                    print(f'added to roster_count: {active_roster_count}')
+                    # print(f'added to roster_count: {active_roster_count}')
             if r.is_Taxi:
                 taxi_count += 1
         for c in capholds:

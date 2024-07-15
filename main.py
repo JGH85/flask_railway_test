@@ -123,11 +123,11 @@ user_url = f'https://api.sleeper.app/v1/user/{UserId}'
 league_users_url = f'https://api.sleeper.app/v1/league/{LeagueId}/users'
 rosters_url = f'https://api.sleeper.app/v1/league/{LeagueId}/rosters'
 # players_url = 'https://api.sleeper.app/v1/players/nfl'
-current_season = 2023
+current_season = 2024
 caphold_multiplier = Decimal("0.3")
 year_over_year_multiplier = Decimal("1.1")
-drop_cap_hold_stop = date.fromisoformat('2023-03-01')
-drops_cap_hold_cutoff = date.fromisoformat('2023-09-01')
+drop_cap_hold_stop = date.fromisoformat('2024-03-01')
+drops_cap_hold_cutoff = date.fromisoformat('2024-09-01')
 roster_max = 18
 pause_transaction_processing = False
 

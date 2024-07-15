@@ -1629,7 +1629,7 @@ def reset_password(token):
     form = ResetPasswordForm()
     if form.validate_on_submit():
         ## Hash the password!!!
-        hashed_pw = generate_password_hash(form.password_hash.data, "sha256")
+        hashed_pw = generate_password_hash(form.password_hash.data, 'pbkdf2:sha256')
         user.password_hash = hashed_pw
         db.session.commit()
         flash("Password successfully updated!")

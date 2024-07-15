@@ -722,7 +722,7 @@ def offseason_roster_update():
             rp_new.team_id = rp.team_id
             rp_new.is_franchised = False
             rp_new.is_ir = False
-            rp_new.is_Taxi = False
+            rp_new.is_Taxi = None
             rp_new.note = f'Offseason processing July {current_season}'
 
             db.session.add(rp)
@@ -953,8 +953,14 @@ def view_franchised_roster_players():
 @app.route('/rosterplayersall/')
 def view_all_roster_players():
     update_roster_ir_and_taxi()
-    all_roster_players = RosterPlayer.query.filter().order_by(RosterPlayer.team_id.asc(), RosterPlayer.date_added.asc(), RosterPlayer.salary.desc())
+    all_roster_players = RosterPlayer.query.filter().order_by(RosterPlayer.team_id.asc(), RosterPlayer.date_added.desc(), RosterPlayer.salary.desc())
     return render_template('roster_players.html', roster_players = all_roster_players)
+
+@app.route('/rosterhistory/<int:id>')
+def view_roster_history(id):
+    update_roster_ir_and_taxi()
+    roster_history = RosterPlayer.query.filter(RosterPlayer.team_id == id).order_by(RosterPlayer.team_id.asc(), RosterPlayer.date_added.desc(), RosterPlayer.salary.desc())
+    return render_template('roster_players.html', roster_players = roster_history)
 
 @app.route('/transactionsall/')
 def view_all_transactions():

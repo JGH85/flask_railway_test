@@ -66,6 +66,8 @@
               <li><a class="dropdown-item" href="{{ url_for('view_franchised_roster_players') }}">Franchised Players</a></li>
               <li><a class="dropdown-item" href="{{ url_for('export_current_rosters_local') }}">Export Rosters to CSV</a></li>
               <li><a class="dropdown-item" href="{{ url_for('export_current_rosters_excel') }}">Export Rosters to Excel</a></li>
+              
+
 
 
               
@@ -75,6 +77,22 @@
 
             </ul>
           </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              History
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{{ url_for('view_all_roster_players') }}">All Historical Data</a></li>
+            
+              <li><hr class="dropdown-divider"></li>
+
+              {% for t in dropdown_teams%}
+              <li><a class="dropdown-item" href="{{ url_for('view_roster_history', id=t.id)}}">{{t.owner.teamname}}</a></li>
+              {% endfor %}
+            </ul>
+          </li>
+
           {% if current_user.id in alist %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color:red">

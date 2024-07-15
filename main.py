@@ -687,6 +687,8 @@ def view_roster(id):
 
 @app.route('/offseasonupdate/')
 def offseason_roster_update():
+    # before running this, make sure to update current season variable. Do not run this twice. 
+    print(f'starting offseason migration for {current_season}')
     teams = Team.query.order_by(Team.id)
     player_migrated_count = 0
     for team in teams:
@@ -720,12 +722,13 @@ def offseason_roster_update():
             rp_new.team_id = rp.team_id
             rp_new.is_franchised = False
             rp_new.is_ir = False
-            rp_new.note = f'Offseason processing July 2024'
+            rp_new.note = f'Offseason processing July {current_season}'
 
             db.session.add(rp)
             db.session.add(rp_new)
             db.session.commit()
             player_migrated_count += 1
+        print(f'successfully migrated {player_migrated_count} to {current_season} for team {team.owner.teamname}')
 
     flash(f"Migrated {player_migrated_count} players to {current_season}")
     return redirect("/")

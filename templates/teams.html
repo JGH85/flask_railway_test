@@ -64,7 +64,7 @@
 
 		<!-- <td class="align-middle"><img src="{{team.owner.avatar}}" height = 75></img></td> -->
 		<!-- <td class="align-middle"><a href="{{ url_for('view_roster', id=team.id)}}">{{team.owner.teamname}}</a></td> -->
-		<td class="align-middle">{{team.owner.teamname}}</td>
+		<td class="align-middle"><a class="dropdown-item" href="{{ url_for('view_roster', id=team.id)}}">{{team.owner.teamname}}</a></td>
 
 		<td class="align-middle">{{team.active_roster_salary}}</a></td>
 		<td class="align-middle">{{team.cap_holds}}</a></td>

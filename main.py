@@ -1766,7 +1766,7 @@ def process_transactions(source="Process Transactions", method = "all"):
         
         missing_player_ids = []
 
-        for i in range(week + 1):
+        for i in range(week + 2):
             print(f'current week: {week}, currently processing leg {i}')
             transaction_dates_list = []
             transaction_date_id_dict = {}

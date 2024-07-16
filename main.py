@@ -1743,6 +1743,11 @@ def search():
 def process_transactions(source="Process Transactions", method = "all"):
     MySys = GetSystemSettings()
     processed_date = date.today()
+    print(f'transaction processing method: {method}')
+    print(f'System flag: allow system processing: {MySys.allow_transaction_processing}')
+    print(f'System flag: allow capholds for drops: {MySys.allow_capholds_for_drops}')
+    print(f'System flag: allow taxi processing: {MySys.allow_taxi_processing}')
+
 
     if method == "week":
         if (MySys.last_transaction_update_date):

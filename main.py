@@ -1226,37 +1226,51 @@ def deleteRosterPlayer(id):
 @app.route('/transaction/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def deleteTransaction(id):
-    #find and delete related rosterplayers
-    related_roster_players = RosterPlayer.query.filter((RosterPlayer.close_transaction_id == id) | (RosterPlayer.open_transaction_id == id))
-    for rp in related_roster_players:
-        db.session.delete(rp)
+    #first find the player who was closed and reopen:
+    closed_players = RosterPlayer.query.filter(RosterPlayer.close_transaction_id == id)
+    for cp in closed_players:
+        #try to find related caphold and delete
+        caphold = CapHold.query.filter(CapHold.associated_transaction_id == id, CapHold.player_id == cp.player_id, CapHold.team_id == cp.team_id)
+        if (caphold != None):
+            db.session.delete(caphold)
+        
+        #remove the removed date and transaction id from closed player
+        cp.date_removed = None
+        cp.close_transaction_id = None
+        db.session.add(cp)
+        db.commit()
+        p = Player.query.filter(Player.id == cp.player_id).first()
+        print(f'successfully restored {p.full_name}')
+    
+    #find and delete new player
+    opened_roster_players = RosterPlayer.query.filter(RosterPlayer.open_transaction_id == id)
+    for op in opened_roster_players:
+        db.session.delete(op)
         db.session.commit()
-        p = Player.query.filter(id = rp.player_id).first()
+        p = Player.query.filter(Player.id == op.player_id).first()
         print(f'successfully deleted {p.full_name}')
     
     #delete the transaction
     transaction = Transactions.query.get_or_404(id)
 
-    #try to find related caphold and delete
-    # caphold = CapHold.query.filter(CapHold.associated_transaction_id == rp.close_transaction_id, CapHold.player_id == rp.player_id, CapHold.team_id == rp.team_id)
     print(f'trying to delete transaction {id}')
     print(transaction)
     db.session.delete(transaction)
     db.session.commit()
     flash("Transaction player successfully deleted.")
     return redirect(url_for('view_all_transactions'))
-    try:
-        # if caphold == None:
-        #     db.session.delete(caphold)
-        #     db.session.commit()
-        #     flash("Caphold successfully deleted.")
-        db.session.delete(transaction)
-        db.session.commit()
-        flash("Transaction player successfully deleted.")
-        return redirect(url_for('view_all_transactions'))
-    except:
-        flash("Deletion failed.")
-        return redirect(url_for('view_all_transactions'))
+    # try:
+    #     # if caphold == None:
+    #     #     db.session.delete(caphold)
+    #     #     db.session.commit()
+    #     #     flash("Caphold successfully deleted.")
+    #     db.session.delete(transaction)
+    #     db.session.commit()
+    #     flash("Transaction player successfully deleted.")
+    #     return redirect(url_for('view_all_transactions'))
+    # except:
+    #     flash("Deletion failed.")
+    #     return redirect(url_for('view_all_transactions'))
     
 
 @app.route('/caphold/add/', methods = ['GET', 'POST'])
@@ -2183,7 +2197,7 @@ def process_rookie_draft():
             # rp.open_transaction_id = tid
             db.session.add(rp)
             db.session.commit()
-            flash(f"{i['pick_no']}: {teamname_dict[owner_dict[i['roster_id']]]} {i['metadata']['first_name']} {i['metadata']['last_name']} {i['metadata']['position']} (${salary})")
+            flash(f"{i['pick_no']}: {teamname_dict[owner_dict[i['roster_id']]]} {i['metadata']['first_name']} {i['metadata']['last_name']} {i['metadata']['position']} (${rp.salary})")
         else:
             flash(f"Could not add {i['metadata']['first_name']} {i['metadata']['last_name']}, already on a roster")
     return redirect("/")

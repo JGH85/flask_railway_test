@@ -1231,23 +1231,22 @@ def deleteTransaction(id):
     for cp in closed_players:
         #try to find related caphold and delete
         caphold = CapHold.query.filter(CapHold.associated_transaction_id == id, CapHold.player_id == cp.player_id, CapHold.team_id == cp.team_id)
-        # if (caphold != None):
-            # db.session.delete(caphold)
-        
+        if (caphold != None):
+            db.session.delete(caphold)
+            db.commit()        
         #remove the removed date and transaction id from closed player
         cp.date_removed = None
         cp.close_transaction_id = None
-        print(f"")
-        # db.session.add(cp)
-        # db.commit()
+        db.session.add(cp)
+        db.commit()
         p = Player.query.filter(Player.id == cp.player_id).first()
         print(f'successfully restored {p.full_name}')
     
     #find and delete new player
     opened_roster_players = RosterPlayer.query.filter(RosterPlayer.open_transaction_id == id)
     for op in opened_roster_players:
-        # db.session.delete(op)
-        # db.session.commit()
+        db.session.delete(op)
+        db.session.commit()
         p = Player.query.filter(Player.id == op.player_id).first()
         print(f'successfully deleted {p.full_name}')
     

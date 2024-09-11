@@ -1255,8 +1255,8 @@ def deleteTransaction(id):
 
     print(f'trying to delete transaction {id}')
     print(transaction)
-    # db.session.delete(transaction)
-    # db.session.commit()
+    db.session.delete(transaction)
+    db.session.commit()
     flash("Transaction player successfully deleted.")
     return redirect(url_for('view_all_transactions'))
     # try:

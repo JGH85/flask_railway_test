@@ -1230,10 +1230,10 @@ def deleteTransaction(id):
     closed_players = RosterPlayer.query.filter(RosterPlayer.close_transaction_id == id)
     for cp in closed_players:
         #try to find related caphold and delete
-        caphold = CapHold.query.filter(CapHold.associated_transaction_id == id, CapHold.player_id == cp.player_id, CapHold.team_id == cp.team_id).first()
-        if (caphold != None):
-            db.session.delete(caphold)
-            db.commit()        
+        # caphold = CapHold.query.filter(CapHold.associated_transaction_id == id, CapHold.player_id == cp.player_id, CapHold.team_id == cp.team_id).first()
+        # if (caphold != None):
+        #     db.session.delete(caphold)
+        #     db.commit()        
         #remove the removed date and transaction id from closed player
         cp.date_removed = None
         cp.close_transaction_id = None

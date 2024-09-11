@@ -1238,7 +1238,7 @@ def deleteTransaction(id):
         cp.date_removed = None
         cp.close_transaction_id = None
         db.session.add(cp)
-        db.commit()
+        db.session.commit()
         p = Player.query.filter(Player.id == cp.player_id).first()
         print(f'successfully restored {p.full_name}')
     

@@ -1777,7 +1777,7 @@ def process_transactions(source="Process Transactions", method = "all"):
         week = getNFLWeek()
         league_status = getLeagueStatus()
         print(week)
-        
+        week = 18
         missing_player_ids = []
 
         for i in range(week + 2):

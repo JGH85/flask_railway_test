@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 import json
 from sqlalchemy import MetaData
-from flask_ckeditor import CKEditor
+# from flask_ckeditor import CKEditor
 from webforms import PostForm, PasswordForm, UserForm, LoginForm, ForgotPasswordForm, ResetPasswordForm, PlayerForm, PlayerRosterForm, SearchForm, OwnerForm, CapHoldForm, AddPlayerRosterForm, FranchisePlayerRosterForm
 from werkzeug.utils import secure_filename
 import uuid as uuid
@@ -42,7 +42,7 @@ app = Flask(__name__)
 #     return jsonify({"Choo Choo": "Welcome to your Flask app 🚅"})
 
 #add CKEditor for rich text text fields
-ckeditor = CKEditor(app)
+# ckeditor = CKEditor(app)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///testsleeper.db'
 # postgresql://${{ PGUSER }}:${{ PGPASSWORD }}@${{ PGHOST }}:${{ PGPORT }}/${{ PGDATABASE }}
 # app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{DBUsername}:{DBPassword}@{DBHost}:{DBPort}/{DBName}'
@@ -730,6 +730,56 @@ def offseason_roster_update():
             db.session.commit()
             player_migrated_count += 1
         print(f'successfully migrated {player_migrated_count} to {current_season} for team {team.owner.teamname}')
+
+    flash(f"Migrated {player_migrated_count} players to {current_season}")
+    return redirect("/")
+
+@app.route('/offseasonupdate/<int:id>')
+def offseason_roster_update(id):
+    # before running this, make sure to update current season variable. Do not run this twice. 
+    print(f'starting offseason migration for {current_season}')
+    teams = Team.query.order_by(Team.id)
+    player_migrated_count = 0
+    for team in teams:
+        print(team.id)
+        if team.id == id:
+        # # team_roster = RosterPlayer.query.filter_by(team_id = id).order_by(RosterPlayer.salary.desc())
+            team_roster = RosterPlayer.query.filter(RosterPlayer.team_id == team.id, RosterPlayer.date_removed.is_(None)).order_by(RosterPlayer.salary.desc())
+        
+            for rp in team_roster:
+                rp_new = RosterPlayer()
+                rp_new.player_id = rp.player_id
+                rp.date_removed = datetime.utcnow()
+                rp.date_updated = datetime.utcnow()
+                rp.is_IR = False
+                #set season, make sure value is updated before this happens
+                rp_new.season = current_season
+
+                if rp.is_franchised:
+                    rp_new.salary = rp.unadjusted_salary #set franchised players back to previous acquired value
+                else:
+                    if rp.unadjusted_salary: #this would only be the case for salary holdovers from trades or something like that
+                        rp_new.salary = round_half_up(rp.unadjusted_salary * year_over_year_multiplier)
+                    elif rp.salary < 5:
+                        rp_new.salary = 5
+                    else:
+                        rp_new.salary = round_half_up(rp.salary * year_over_year_multiplier)
+
+                        
+                rp_new.unadjusted_salary = 0
+                rp_new.date_added = datetime.utcnow()
+                rp_new.date_updated = datetime.utcnow()
+                rp_new.team_id = rp.team_id
+                rp_new.is_franchised = False
+                rp_new.is_ir = False
+                rp_new.is_Taxi = None
+                rp_new.note = f'Offseason processing July {current_season}'
+
+                db.session.add(rp)
+                db.session.add(rp_new)
+                db.session.commit()
+                player_migrated_count += 1
+            print(f'successfully migrated {player_migrated_count} to {current_season} for team {team.owner.teamname}')
 
     flash(f"Migrated {player_migrated_count} players to {current_season}")
     return redirect("/")

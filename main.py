@@ -735,7 +735,7 @@ def offseason_roster_update():
     return redirect("/")
 
 @app.route('/offseasonupdate/<int:id>')
-def offseason_roster_update(id):
+def offseason_roster_update_single(id):
     # before running this, make sure to update current season variable. Do not run this twice. 
     print(f'starting offseason migration for {current_season}')
     teams = Team.query.order_by(Team.id)

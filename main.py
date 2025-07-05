@@ -123,7 +123,7 @@ user_url = f'https://api.sleeper.app/v1/user/{UserId}'
 league_users_url = f'https://api.sleeper.app/v1/league/{LeagueId}/users'
 rosters_url = f'https://api.sleeper.app/v1/league/{LeagueId}/rosters'
 # players_url = 'https://api.sleeper.app/v1/players/nfl'
-current_season = 2024
+current_season = 2025
 caphold_multiplier = Decimal("0.3")
 year_over_year_multiplier = Decimal("1.1")
 drop_cap_hold_stop = date.fromisoformat('2024-03-01')
@@ -1777,7 +1777,7 @@ def process_transactions(source="Process Transactions", method = "all"):
         week = getNFLWeek()
         league_status = getLeagueStatus()
         print(week)
-        week = 18
+        # week = 18
         missing_player_ids = []
 
         for i in range(week + 2):

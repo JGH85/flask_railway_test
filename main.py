@@ -116,7 +116,8 @@ UserId = "499807936168587264"
 Sport = "nfl"
 # LeagueId = "859990766557179904" # 2022  
 # LeagueId = "986829727832805376" # 2023
-LeagueId = "1111386461611593728" # 2024
+# LeagueId = "1111386461611593728" # 2024
+LeagueId = "1219121675715485696" # 2025
 
 #setup urls for API calls
 user_url = f'https://api.sleeper.app/v1/user/{UserId}'
@@ -130,6 +131,10 @@ drop_cap_hold_stop = date.fromisoformat('2024-03-01')
 drops_cap_hold_cutoff = date.fromisoformat('2024-09-01')
 roster_max = 18
 pause_transaction_processing = False
+
+# https://api.sleeper.app/v1/user/<user_id>/leagues/<sport>/<season>
+# https://api.sleeper.app/v1/user/860011165475012608/leagues/nfl/2025
+# https://api.sleeper.app/v1/league/1219121675715485696
 
 
 def getLeagueStatus():
@@ -688,6 +693,8 @@ def view_roster(id):
 @app.route('/offseasonupdate/')
 def offseason_roster_update():
     # before running this, make sure to update current season variable. Do not run this twice. 
+    #NOte: created a new version of this, run team by team instead
+    #NB2: after doing the update, switch leagueid to new id for next season
     print(f'starting offseason migration for {current_season}')
     teams = Team.query.order_by(Team.id)
     player_migrated_count = 0
@@ -1129,6 +1136,8 @@ def load_initial_rosters_from_csv():
 #                     updated_player_count += 1
 #     flash(f"Added {updated_player_count} players")
 #     return redirect("/")
+
+
 
 @app.route('/rosterplayer/update/<int:id>', methods = ['GET', 'POST'])
 @login_required
@@ -1826,8 +1835,8 @@ def process_transactions(source="Process Transactions", method = "all"):
     if MySys.allow_transaction_processing:
         week = getNFLWeek()
         league_status = getLeagueStatus()
-        print(week)
-        # week = 18
+        print(f'nfl week according to sleeper: {week}')
+        # week = 18  #this works after the season ends and sleeper thinks it's week 0
         missing_player_ids = []
 
         for i in range(week + 2):

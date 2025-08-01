@@ -2104,41 +2104,44 @@ def process_transactions(source="Process Transactions", method = "all"):
                                     print(trade_transaction_to_save)
                                     db.session.commit()
                             
+                            if (dropped_players):
                             #drop all players in dropped players
-                            for i in dropped_players.keys():
-                                roster_id = dropped_players[i]
-                                rp = RosterPlayer.query.filter(RosterPlayer.player_id == i, RosterPlayer.team_id == roster_id, RosterPlayer.date_removed.is_(None)).first()
-                                if rp == None:
-                                    e = ErrorLog()
-                                    e.transaction_id = tid
-                                    e.player_id = i
-                                    e.error_date = datetime.utcnow()
-                                    
+                                for i in dropped_players.keys():
+                                    roster_id = dropped_players[i]
+                                    rp = RosterPlayer.query.filter(RosterPlayer.player_id == i, RosterPlayer.team_id == roster_id, RosterPlayer.date_removed.is_(None)).first()
+                                    if rp == None:
+                                        e = ErrorLog()
+                                        e.transaction_id = tid
+                                        e.player_id = i
+                                        e.error_date = datetime.utcnow()
+                                        
 
-                                    print(f'Could not find traded dropped player with id {i}. Verify if there was an issue. --------------------')
-                                else:
-                                    rp.date_removed = transaction_dt
+                                        print(f'Could not find traded dropped player with id {i}. Verify if there was an issue. --------------------')
+                                    else:
+                                        rp.date_removed = transaction_dt
+                                        rp.date_updated = datetime.utcnow()
+                                        rp.close_transaction_id = tid
+                                        db.session.add(rp)
+                                        db.session.commit()
+
+                            if (added_players):
+                                #add all players in added players
+                                for i in added_players.keys():
+                                    roster_id = added_players[i]
+                                    rp = RosterPlayer()
+                                    rp.player_id = i
+                                    rp.team_id = roster_id
+                                    rp.season = MySys.current_season
+                                    rp.open_transaction_id = tid
+                                    if i in trade_adds_salaries:
+                                        rp.salary = trade_adds_salaries[i]
+                                    else:
+                                        print(f"couldn't find salary for id {i}")
+                                    rp.date_added = transaction_dt
                                     rp.date_updated = datetime.utcnow()
-                                    rp.close_transaction_id = tid
+                                    rp.is_franchised = False
                                     db.session.add(rp)
-                                    db.session.commit()
-                            #add all players in added players
-                            for i in added_players.keys():
-                                roster_id = added_players[i]
-                                rp = RosterPlayer()
-                                rp.player_id = i
-                                rp.team_id = roster_id
-                                rp.season = MySys.current_season
-                                rp.open_transaction_id = tid
-                                if i in trade_adds_salaries:
-                                    rp.salary = trade_adds_salaries[i]
-                                else:
-                                    print(f"couldn't find salary for id {i}")
-                                rp.date_added = transaction_dt
-                                rp.date_updated = datetime.utcnow()
-                                rp.is_franchised = False
-                                db.session.add(rp)
-                                db.session.commit()                 
+                                    db.session.commit()                 
 
                             print(f'trade_teams: {trade_teams}, drops:{trade_partners_drops}, adds: {trade_partners_adds}')
 

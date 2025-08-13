@@ -340,30 +340,30 @@ def getPlayers():
 
 
 
-    # for id in player_id_list:  
-    #     # if (players[id]['position'] in position_list) and (players[id]['search_rank'] != 9999999) and (players[id]['active'] == True) and (added_player_count < 5000): 
-    #     if (players[id]['position'] in position_list) and (players[id]['active'] == True) and (added_player_count < 5000): 
+    for id in player_ids_to_add_cleaned:  
+        # # if (players[id]['position'] in position_list) and (players[id]['search_rank'] != 9999999) and (players[id]['active'] == True) and (added_player_count < 5000): 
+        # if (players[id]['position'] in position_list) and (players[id]['active'] == True) and (added_player_count < 5000): 
 
-    #         # player_to_update = Player.query.filter_by(id=id).first()
-    #         if int(id) not in existing_player_ids:
-    #         # if player_to_update == None:
-    #             p = Player()
-    #             p.id = players[id]['player_id']
-    #             p.search_full_name = players[id]['search_full_name']
-    #             p.search_last_name = players[id]['search_last_name']
-    #             p.search_first_name = players[id]['search_first_name']
-    #             p.full_name = players[id]['full_name']
-    #             p.last_name = players[id]['last_name']
-    #             p.first_name = players[id]['first_name']
-    #             p.position = players[id]['position']
-    #             p.status = players[id]['status']
-    #             p.team = players[id]['team']
-    #             db.session.add(p)
-    #             db.session.commit()
-    #             added_player_count += 1
-    #             print(f'added player {p.full_name} with id {p.id}.')
-    #         else: print(f'player {players[id]["full_name"]} already exists, no changes made.')
-    #     # added_player_count += 1
+        #     # player_to_update = Player.query.filter_by(id=id).first()
+        #     if int(id) not in existing_player_ids:
+        #     # if player_to_update == None:
+        p = Player()
+        p.id = players[id]['player_id']
+        p.search_full_name = players[id]['search_full_name']
+        p.search_last_name = players[id]['search_last_name']
+        p.search_first_name = players[id]['search_first_name']
+        p.full_name = players[id]['full_name']
+        p.last_name = players[id]['last_name']
+        p.first_name = players[id]['first_name']
+        p.position = players[id]['position']
+        p.status = players[id]['status']
+        p.team = players[id]['team']
+        db.session.add(p)
+        db.session.commit()
+        added_player_count += 1
+        print(f'added player {p.full_name} with id {p.id}.')
+            # else: print(f'player {players[id]["full_name"]} already exists, no changes made.')
+        # added_player_count += 1
     flash(f"successfully added {added_player_count} players")
         
     return render_template('load_players.html')

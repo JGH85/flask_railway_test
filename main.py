@@ -1385,7 +1385,7 @@ def addCapHold(team_id = None):
             db.session.rollback()
             flash(f"Oops, that didn't work: {str(e)}")
             return render_template('add_cap_hold.html', form=form)
-        else:
+    else:
         try:
             # Populate team choices
             team_choices = [(str(team.id), team.owner.teamname) for team in Team.query.order_by(Team.id).all()]

@@ -6,7 +6,7 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 import json
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, distinct
 # from flask_ckeditor import CKEditor
 from webforms import PostForm, PasswordForm, UserForm, LoginForm, ForgotPasswordForm, ResetPasswordForm, PlayerForm, PlayerRosterForm, SearchForm, OwnerForm, CapHoldForm, AddPlayerRosterForm, FranchisePlayerRosterForm
 from werkzeug.utils import secure_filename
@@ -1386,11 +1386,42 @@ def addCapHold(team_id = None):
     else:
         team_choices = [(team.id, team.owner.teamname) for team in Team.query.order_by(Team.id).all()]
         form.team.choices = team_choices
-        player_choices = [(player.id, f"{player.last_name}, {player.first_name}") for player in Player.query.order_by(Player.last_name, Player.first_name).all()]
+
+        # Conditional player choices based on team_id
+        if team_id is not None:
+            # Verify team_id exists
+            if db.session.query(Team.query.filter_by(id=team_id).exists()).scalar():
+                player_choices = [
+                    (str(player.id), f"{player.last_name}, {player.first_name}")
+                    for player in Player.query.join(RosterPlayer)
+                    .filter(RosterPlayer.team_id == team_id, RosterPlayer.season == current_season)
+                    .distinct(Player.id)
+                    .order_by(Player.last_name, Player.first_name)
+                    .all()
+                ]
+            else:
+                flash(f"Team ID {team_id} is invalid. Showing all players.")
+                player_choices = [
+                    (str(player.id), f"{player.last_name}, {player.first_name}")
+                    for player in Player.query
+                    .order_by(Player.last_name, Player.first_name)
+                    .all()
+                ]
+        else:
+            player_choices = [
+                (str(player.id), f"{player.last_name}, {player.first_name}")
+                for player in Player.query
+                .order_by(Player.last_name, Player.first_name)
+                .all()
+            ]
+        form.player_id.choices = player_choices
+
+        # player_choices = [(player.id, f"{player.last_name}, {player.first_name}") for player in Player.query.order_by(Player.last_name, Player.first_name).all()]
         form.player_id.choices = player_choices
         last_season = int(current_season) - 1
         seasons = [current_season, last_season]
-        form.season.choices = seasons   
+        form.season.choices = seasons 
+        form.season.data = current_season  
         form.note.data = "Added by commissioner"
         if team_id is not None:
             form.team.data = team_id  # Set default team in form

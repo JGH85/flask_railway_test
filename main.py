@@ -1426,8 +1426,10 @@ def addCapHold(team_id = None):
             last_season = int(current_season) - 1
             seasons = [str(current_season), str(last_season)]  # Ensure string for SelectField
             form.season.choices = seasons
+            form.season.data = current_season
             form.note.data = "Added by commissioner"
-
+            form.effective_date.data = datetime.date.today()  # Set default effective_date to today
+           
             # Set default team_id after choices are set
             if team_id is not None:
                 form.team.data = team_id

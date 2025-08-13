@@ -322,12 +322,23 @@ def getPlayers():
     
     player_id_list = list(players.keys())
     print(f"player_id_list length: {len(player_id_list)}")
+
     position_list = ['QB', 'WR', 'RB', 'TE', 'K']
     added_player_count = 0
     #add status logic
 
     existing_player_ids = [player.id for player in Player.query.with_entities(Player.id).all()]
-    print(f"existing players ids: {existing_player_ids}")
+    print(f"existing players ids count: {len(existing_player_ids)}, list: {existing_player_ids}")
+
+    player_ids_to_add_cleaned = []
+    for id in player_id_list:
+        if (players[id]['position'] in position_list) and (players[id]['active'] == True) and int(id) not in existing_player_ids: 
+            player_ids_to_add_cleaned.append(id)
+
+    print(f"total new players to add: {len(player_ids_to_add_cleaned)}")
+    print(f"list of new players to add: {player_ids_to_add_cleaned}")
+
+
 
     # for id in player_id_list:  
     #     # if (players[id]['position'] in position_list) and (players[id]['search_rank'] != 9999999) and (players[id]['active'] == True) and (added_player_count < 5000): 

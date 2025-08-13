@@ -324,12 +324,17 @@ def getPlayers():
     position_list = ['QB', 'WR', 'RB', 'TE', 'K']
     added_player_count = 0
     #add status logic
+
+    existing_player_ids = [player.id for player in Player.query.with_entities(Player.id).all()]
+    print(f"existing players ids: {existing_player_ids}")
+
     for id in player_id_list:  
         # if (players[id]['position'] in position_list) and (players[id]['search_rank'] != 9999999) and (players[id]['active'] == True) and (added_player_count < 5000): 
         if (players[id]['position'] in position_list) and (players[id]['active'] == True) and (added_player_count < 5000): 
 
-            player_to_update = Player.query.filter_by(id=id).first()
-            if player_to_update == None:
+            # player_to_update = Player.query.filter_by(id=id).first()
+            if id not in existing_player_ids:
+            # if player_to_update == None:
                 p = Player()
                 p.id = players[id]['player_id']
                 p.search_full_name = players[id]['search_full_name']

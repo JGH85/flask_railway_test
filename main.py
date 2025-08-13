@@ -1428,7 +1428,7 @@ def addCapHold(team_id = None):
             form.season.choices = seasons
             form.season.data = current_season
             form.note.data = "Added by commissioner"
-            form.effective_date.data = datetime.date.today()  # Set default effective_date to today
+            form.effective_date.data = date.today()  # Set default effective_date to today
            
             # Set default team_id after choices are set
             if team_id is not None:

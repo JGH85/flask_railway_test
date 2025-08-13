@@ -2229,11 +2229,18 @@ def process_rookie_draft():
 
     #for each draft pick, check if already rostered. if so skip and throw error
     for i in rookies:
+        #check if player exists, if not Matthew just put in a dummy player and skip
+        p = Player.query.filter_by(id=i['player_id']).first()
+        if p == None:
+            continue #stop processing and go to next
+
         rp = RosterPlayer.query.filter(RosterPlayer.player_id == i['player_id']).first()
         if rp == None:
             rp = RosterPlayer()
             rp.player_id = i['player_id']
             
+
+
             #get salary
             if i['pick_no'] == 1:
                 rp.salary = 25

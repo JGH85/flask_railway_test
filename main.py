@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 import json
 from sqlalchemy import MetaData, distinct
+from sqlalchemy.exc import SQLAlchemyError
 # from flask_ckeditor import CKEditor
 from webforms import PostForm, PasswordForm, UserForm, LoginForm, ForgotPasswordForm, ResetPasswordForm, PlayerForm, PlayerRosterForm, SearchForm, OwnerForm, CapHoldForm, AddPlayerRosterForm, FranchisePlayerRosterForm
 from werkzeug.utils import secure_filename
@@ -1380,53 +1381,64 @@ def addCapHold(team_id = None):
             db.session.commit()
             flash("Cap Hold added successfully.")
             return redirect(url_for('view_active_cap_holds'))
-        except:
-            flash("Oops, that didn't work.")
-            return render_template('add_roster_player.html', form=form)
-    else:
-        team_choices = [(team.id, team.owner.teamname) for team in Team.query.order_by(Team.id).all()]
-        form.team.choices = team_choices
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            flash(f"Oops, that didn't work: {str(e)}")
+            return render_template('add_cap_hold.html', form=form)
+        else:
+        try:
+            # Populate team choices
+            team_choices = [(str(team.id), team.owner.teamname) for team in Team.query.order_by(Team.id).all()]
+            form.team.choices = team_choices
 
-        # Conditional player choices based on team_id
-        if team_id is not None:
-            # Verify team_id exists
-            if db.session.query(Team.query.filter_by(id=team_id).exists()).scalar():
-                player_choices = [
-                    (str(player.id), f"{player.last_name}, {player.first_name}")
-                    for player in Player.query.join(RosterPlayer)
-                    .filter(RosterPlayer.team_id == team_id, RosterPlayer.season == current_season)
-                    .distinct(Player.id)
-                    .order_by(Player.last_name, Player.first_name)
-                    .all()
-                ]
+            # Conditional player choices based on team_id
+            if team_id is not None:
+                # Verify team_id exists
+                if db.session.query(Team.query.filter_by(id=team_id).exists()).scalar():
+                    # Ensure current_season is an integer
+                    current_season_int = int(current_season) if isinstance(current_season, str) else current_season
+                    player_choices = [
+                        (str(player.id), f"{player.last_name}, {player.first_name}")
+                        for player in Player.query
+                        .join(RosterPlayer, Player.id == RosterPlayer.player_id)  # Explicit join condition
+                        .filter(RosterPlayer.team_id == team_id, RosterPlayer.season == current_season_int)
+                        .distinct()  # Use plain distinct for compatibility
+                        .order_by(Player.last_name, Player.first_name)
+                        .all()
+                    ]
+                else:
+                    flash(f"Team ID {team_id} is invalid. Showing all players.")
+                    player_choices = [
+                        (str(player.id), f"{player.last_name}, {player.first_name}")
+                        for player in Player.query
+                        .order_by(Player.last_name, Player.first_name)
+                        .all()
+                    ]
             else:
-                flash(f"Team ID {team_id} is invalid. Showing all players.")
                 player_choices = [
                     (str(player.id), f"{player.last_name}, {player.first_name}")
                     for player in Player.query
                     .order_by(Player.last_name, Player.first_name)
                     .all()
                 ]
-        else:
-            player_choices = [
-                (str(player.id), f"{player.last_name}, {player.first_name}")
-                for player in Player.query
-                .order_by(Player.last_name, Player.first_name)
-                .all()
-            ]
-        form.player_id.choices = player_choices
+            form.player_id.choices = player_choices
 
-        # player_choices = [(player.id, f"{player.last_name}, {player.first_name}") for player in Player.query.order_by(Player.last_name, Player.first_name).all()]
-        form.player_id.choices = player_choices
-        last_season = int(current_season) - 1
-        seasons = [current_season, last_season]
-        form.season.choices = seasons 
-        form.season.data = current_season  
-        form.note.data = "Added by commissioner"
-        if team_id is not None:
-            form.team.data = team_id  # Set default team in form
-            print(f'set team to id: {team_id}')
-        return render_template('add_cap_hold.html', form=form)
+            last_season = int(current_season) - 1
+            seasons = [str(current_season), str(last_season)]  # Ensure string for SelectField
+            form.season.choices = seasons
+            form.note.data = "Added by commissioner"
+
+            # Set default team_id after choices are set
+            if team_id is not None and str(team_id) in [choice[0] for choice in team_choices]:
+                form.team.data = str(team_id)
+                print(f"Set team to ID: {team_id}")
+
+            return render_template('add_cap_hold.html', form=form)
+
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            flash(f"Error loading form: {str(e)}")
+            return render_template('add_cap_hold.html', form=form)
 
 @app.route('/caphold/update/<int:id>', methods = ['GET', 'POST'])
 @login_required

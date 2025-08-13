@@ -1394,6 +1394,7 @@ def addCapHold(team_id = None):
         form.note.data = "Added by commissioner"
         if team_id is not None:
             form.team.data = str(team_id)  # Set default team in form
+            print(f'set team to id: {team_id}')
         return render_template('add_cap_hold.html', form=form)
 
 @app.route('/caphold/update/<int:id>', methods = ['GET', 'POST'])

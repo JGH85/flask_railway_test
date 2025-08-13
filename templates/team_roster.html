@@ -241,7 +241,16 @@
 
   {% if capholds %}
 
-  <h3>Cap Holds</h3>
+  <h3>Cap Holds</h3> 
+
+  {% if current_user.id in alist %}
+<form method="GET" action="{{url_for('addCapHold', team_id=team.id)}}" class="d-flex">
+	{{ form.hidden_tag() }}	
+	<button class="btn btn-outline-info" type="submit">Add Cap Hold</button>
+  </form>
+<br>
+
+{% endif %}
   <table class="table table-numbers table-hover table-striped table-sm">
   <!-- <table class="table"> -->
   

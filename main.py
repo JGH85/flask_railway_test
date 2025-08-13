@@ -1356,8 +1356,9 @@ def deleteTransaction(id):
     
 
 @app.route('/caphold/add/', methods = ['GET', 'POST'])
+@app.route('/caphold/add/<int:team_id>', methods=['GET', 'POST'])  # Add route with team_id
 @login_required
-def addCapHold():
+def addCapHold(team_id = None):
     form = CapHoldForm()
     cp_to_add = CapHold()
     # print(rp_to_update.full_name)
@@ -1391,6 +1392,8 @@ def addCapHold():
         seasons = [current_season, last_season]
         form.season.choices = seasons   
         form.note.data = "Added by commissioner"
+        if team_id is not None:
+            form.team.data = str(team_id)  # Set default team in form
         return render_template('add_cap_hold.html', form=form)
 
 @app.route('/caphold/update/<int:id>', methods = ['GET', 'POST'])

@@ -2232,7 +2232,10 @@ def process_rookie_draft():
         #check if player exists, if not Matthew just put in a dummy player and skip
         p = Player.query.filter_by(id=i['player_id']).first()
         if p == None:
+            print(f"skipping rookie: {i}")
             continue #stop processing and go to next
+        
+        print(f"processing player Name: {p.full_name}, i: {i}")
 
         rp = RosterPlayer.query.filter(RosterPlayer.player_id == i['player_id']).first()
         if rp == None:

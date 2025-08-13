@@ -328,7 +328,7 @@ def getPlayers():
     existing_player_ids = [player.id for player in Player.query.with_entities(Player.id).all()]
     print(f"existing players ids: {existing_player_ids}")
 
-    for id in player_id_list:  
+    if int(id) not in existing_player_ids:
         # if (players[id]['position'] in position_list) and (players[id]['search_rank'] != 9999999) and (players[id]['active'] == True) and (added_player_count < 5000): 
         if (players[id]['position'] in position_list) and (players[id]['active'] == True) and (added_player_count < 5000): 
 

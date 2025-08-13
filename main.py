@@ -520,6 +520,7 @@ def update_taxi(method="all"):
     
     print("processing new taxi players")
     #don't process new taxi players if drops turned off
+    total_taxi_spots = 0
     if MySys.allow_taxi_processing:
         #get Taxi and set new ones
         for r in rosters:
@@ -537,11 +538,16 @@ def update_taxi(method="all"):
                         rp.is_Taxi = True
                         db.session.add(rp)
                         db.session.commit()
+                        total_taxi_spots += 1
+
 
     #update system paramter for when last processed
     MySys.last_taxi_update_date = processed_date
     db.session.add(MySys)
     db.session.commit()
+    if method != 'auto':
+        flash(f'Total Players now on taxi squads:{total_taxi_spots}')
+        return redirect("/")
 
 @app.route('/rosters/updateir')
 # @login_required

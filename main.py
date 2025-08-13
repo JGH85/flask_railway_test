@@ -1429,8 +1429,8 @@ def addCapHold(team_id = None):
             form.note.data = "Added by commissioner"
 
             # Set default team_id after choices are set
-            if team_id is not None and str(team_id) in [choice[0] for choice in team_choices]:
-                form.team.data = str(team_id)
+            if team_id is not None:
+                form.team.data = team_id
                 print(f"Set team to ID: {team_id}")
 
             return render_template('add_cap_hold.html', form=form)

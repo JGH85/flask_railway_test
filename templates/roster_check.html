@@ -1,31 +1,32 @@
 {% extends 'base.html' %}
+
 {% block title %}
-Compare Rosters to Sleeper
+Roster Check Results
 {% endblock %}
 
 {% block content %}
-
-
+<br>
 {% for message in get_flashed_messages() %}
-	
-	<div class="alert alert-warning alert-dismissible fade show" role="alert">
-	  {{ message }}
-	  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-	</div>
-
-	
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>    
 {% endfor %}
 
 <div class="container">
     <h1>Roster Check Discrepancies</h1>
     <p>The following discrepancies were found between the database and Sleeper rosters:</p>
-    <table class="table table-striped">
-        <thead>
+    <table class="table table-numbers table-hover table-striped table-sm">
+        <thead class="table-dark">
             <tr>
-                <th>Team</th>
-                <th>Player</th>
-                <th>Player ID</th>
-                <th>Issue</th>
+                <th scope="col">Team</th>
+                <th scope="col">Player</th>
+                <th scope="col">Player ID</th>
+                <th scope="col">Issue</th>
+                {% if current_user.id in alist %}
+                <th scope="col"></th>
+                <th scope="col"></th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -35,6 +36,13 @@ Compare Rosters to Sleeper
                 <td>{{ discrepancy.player_name | default('N/A') }}</td>
                 <td>{{ discrepancy.player_id | default('N/A') }}</td>
                 <td>{{ discrepancy.issue }}</td>
+                {% if current_user.id in alist and discrepancy.issue == "Player in database but not in Sleeper roster" %}
+                <td><a href="{{ url_for('updateRosterPlayer', id=discrepancy.roster_player_id) }}">Edit</a></td>
+                <td><a href="{{ url_for('deleteRosterPlayer', id=discrepancy.roster_player_id) }}" onclick="return confirm('Are you sure you want to delete this roster player?');">Delete</a></td>
+                {% else %}
+                <td></td>
+                <td></td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}
+Compare Rosters to Sleeper
+{% endblock %}
+
+{% block content %}
+
+
+{% for message in get_flashed_messages() %}
+	
+	<div class="alert alert-warning alert-dismissible fade show" role="alert">
+	  {{ message }}
+	  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+
+	
+{% endfor %}
+
+<div class="container">
+    <h1>Roster Check Discrepancies</h1>
+    <p>The following discrepancies were found between the database and Sleeper rosters:</p>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>Player</th>
+                <th>Player ID</th>
+                <th>Issue</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for discrepancy in discrepancies %}
+            <tr>
+                <td>{{ discrepancy.team_name }}</td>
+                <td>{{ discrepancy.player_name | default('N/A') }}</td>
+                <td>{{ discrepancy.player_id | default('N/A') }}</td>
+                <td>{{ discrepancy.issue }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Home</a>
+</div>
+{% endblock %}

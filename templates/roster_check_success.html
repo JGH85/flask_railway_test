@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}
+Compare Rosters to Sleeper
+{% endblock %}
+
+{% block content %}
+
+
+{% for message in get_flashed_messages() %}
+	
+	<div class="alert alert-warning alert-dismissible fade show" role="alert">
+	  {{ message }}
+	  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+
+	
+{% endfor %}
+
+<div class="container">
+    <h1>Roster Check Successful</h1>
+    <p>All rosters in the database match the Sleeper rosters!</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Home</a>
+</div>
+{% endblock %}

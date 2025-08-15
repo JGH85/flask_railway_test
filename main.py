@@ -2423,6 +2423,86 @@ def process_auction_draft():
                 flash(f"Could not add {i['metadata']['first_name']} {i['metadata']['last_name']}, already on a roster")
     return redirect("/")
 
+
+@app.route('/rostercheck/')
+def check_rosters():
+    # Step 1: Process transactions to ensure database is up-to-date
+    success = process_transactions(source="Roster Check", method="all")
+    if not success:
+        flash("Error processing transactions. Please contact administrator")
+        return redirect(url_for('index'))
+
+    # Step 2: Fetch current rosters from Sleeper API
+    response = requests.get(rosters_url)
+    sleeper_rosters = response.json()
+
+    # Step 3: Compare rosters
+    discrepancies = []
+    current_season = GetCurrentSeason()
+    
+    # Get all teams from the database
+    teams = Team.query.order_by(Team.id).all()
+    
+    for team in teams:
+        # Get active roster players from database (no date_removed, current season)
+        db_roster = RosterPlayer.query.filter(
+            RosterPlayer.team_id == team.id,
+            RosterPlayer.season == current_season,
+            RosterPlayer.date_removed.is_(None)
+        ).all()
+        db_player_ids = {rp.player_id for rp in db_roster}
+        
+        # Find corresponding Sleeper roster
+        sleeper_team = next((r for r in sleeper_rosters if r['roster_id'] == team.id), None)
+        if not sleeper_team:
+            discrepancies.append({
+                'team_id': team.id,
+                'team_name': team.owner.teamname if team.owner else f"Team {team.id}",
+                'issue': f"No roster found in Sleeper for team ID {team.id}"
+            })
+            continue
+        
+        # Get player IDs from Sleeper (only players, ignoring starters)
+        sleeper_player_ids = set(sleeper_team.get('players', []))
+        
+        # Compare rosters
+        missing_in_sleeper = db_player_ids - sleeper_player_ids
+        missing_in_db = sleeper_player_ids - db_player_ids
+        
+        # Add discrepancies for players missing in Sleeper
+        for player_id in missing_in_sleeper:
+            player = Player.query.filter_by(id=player_id).first()
+            discrepancies.append({
+                'team_id': team.id,
+                'team_name': team.owner.teamname if team.owner else f"Team {team.id}",
+                'player_id': player_id,
+                'player_name': player.full_name if player else f"Unknown Player {player_id}",
+                'issue': "Player in database but not in Sleeper roster"
+            })
+        
+        # Add discrepancies for players missing in database
+        for player_id in missing_in_db:
+            player = Player.query.filter_by(id=player_id).first()
+            discrepancies.append({
+                'team_id': team.id,
+                'team_name': team.owner.teamname if team.owner else f"Team {team.id}",
+                'player_id': player_id,
+                'player_name': player.full_name if player else f"Unknown Player {player_id}",
+                'issue': "Player in Sleeper roster but not in database"
+            })
+
+    # Step 4: Render results
+    if discrepancies:
+        return render_template('roster_check.html', discrepancies=discrepancies)
+    else:
+        flash("All rosters match between database and Sleeper!")
+        return render_template('roster_check_success.html')
+
+
+
+
+
+
 #all models go below here ---------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------
 

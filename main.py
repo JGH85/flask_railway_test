@@ -1171,7 +1171,8 @@ def updateRosterPlayer(id):
     # print(rp_to_update.full_name)
     if request.method == "POST":
         rp_to_update.salary = request.form['salary']
-        rp_to_update.unadjusted_salary = request.form['unadjusted_salary']
+        if request.form['unadjusted_salary'] != '':
+            rp_to_update.unadjusted_salary = request.form['unadjusted_salary']
         rp_to_update.team_id = request.form['team']
         if request.form['date_added'] == '':
             rp_to_update.date_added = None

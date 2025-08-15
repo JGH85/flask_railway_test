@@ -2445,8 +2445,12 @@ def check_rosters():
     
     # Get all teams from the database
     teams = Team.query.order_by(Team.id).all()
+
+
     
     for team in teams:
+        print(f"Comparing rosters and teams. Current team: {team}")
+
         # Get active roster players from database (no date_removed, current season)
         db_roster = RosterPlayer.query.filter(
             RosterPlayer.team_id == team.id,

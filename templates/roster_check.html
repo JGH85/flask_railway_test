@@ -9,7 +9,7 @@ Roster Check Results
 {% for message in get_flashed_messages() %}
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>    
 {% endfor %}
 
@@ -36,7 +36,7 @@ Roster Check Results
                 <td>{{ discrepancy.player_name | default('N/A') }}</td>
                 <td>{{ discrepancy.player_id | default('N/A') }}</td>
                 <td>{{ discrepancy.issue }}</td>
-                {% if current_user.id in alist and discrepancy.issue == "Player in database but not in Sleeper roster" %}
+                {% if current_user.id in alist and discrepancy.issue == "Player in database but not in Sleeper roster" and discrepancy.roster_player_id is not none %}
                 <td><a href="{{ url_for('updateRosterPlayer', id=discrepancy.roster_player_id) }}">Edit</a></td>
                 <td><a href="{{ url_for('deleteRosterPlayer', id=discrepancy.roster_player_id) }}" onclick="return confirm('Are you sure you want to delete this roster player?');">Delete</a></td>
                 {% else %}

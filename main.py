@@ -2442,56 +2442,55 @@ def check_rosters():
     # Step 3: Compare rosters
     discrepancies = []
     current_season = GetCurrentSeason()
-    
+
     # Get all teams from the database
     teams = Team.query.order_by(Team.id).all()
 
-
-    
     for team in teams:
-        print(f"Comparing rosters and teams. Current team: {team}")
-
         # Get active roster players from database (no date_removed, current season)
         db_roster = RosterPlayer.query.filter(
             RosterPlayer.team_id == team.id,
             RosterPlayer.season == current_season,
             RosterPlayer.date_removed.is_(None)
         ).all()
-        db_player_ids = {str(rp.player_id) for rp in db_roster}  # Convert to string to match Sleeper API
-        
+        db_player_ids = {str(rp.player_id) for rp in db_roster}
+
         # Find corresponding Sleeper roster
-        sleeper_team = next((r for r in sleeper_rosters if r['roster_id'] == team.id), None)
+        sleeper_team = next((r for r in sleeper_rosters if str(r['roster_id']) == str(team.id)), None)
         if not sleeper_team:
             discrepancies.append({
                 'team_id': team.id,
                 'team_name': team.owner.teamname if team.owner else f"Team {team.id}",
-                'issue': f"No roster found in Sleeper for team ID {team.id}"
+                'issue': f"No roster found in Sleeper for team ID {team.id}",
+                'roster_player_id': None  # Add for consistency
             })
             continue
         
         # Get player IDs from Sleeper (convert to set of strings)
         sleeper_player_ids = {str(pid) for pid in sleeper_team.get('players', [])}
-        
-        # Debug output for Josh Allen or specific team
-        if team.id == 5:  # Replace 1 with the team ID where Josh Allen should be
-            print(f"Team {team.id} - DB Player IDs: {db_player_ids}")
-            print(f"Team {team.id} - Sleeper Player IDs: {sleeper_player_ids}")
-        
+
         # Compare rosters
         missing_in_sleeper = db_player_ids - sleeper_player_ids
         missing_in_db = sleeper_player_ids - db_player_ids
         
         # Add discrepancies for players missing in Sleeper
         for player_id in missing_in_sleeper:
+            roster_player = RosterPlayer.query.filter_by(
+                team_id=team.id,
+                player_id=int(player_id),
+                season=current_season,
+                date_removed=None
+            ).first()
             player = Player.query.filter_by(id=int(player_id)).first()
             discrepancies.append({
                 'team_id': team.id,
                 'team_name': team.owner.teamname if team.owner else f"Team {team.id}",
                 'player_id': player_id,
                 'player_name': player.full_name if player else f"Unknown Player {player_id}",
-                'issue': "Player in database but not in Sleeper roster"
+                'issue': "Player in database but not in Sleeper roster",
+                'roster_player_id': roster_player.id if roster_player else None
             })
-        
+
         # Add discrepancies for players missing in database
         for player_id in missing_in_db:
             player = Player.query.filter_by(id=int(player_id)).first()
@@ -2500,7 +2499,8 @@ def check_rosters():
                 'team_name': team.owner.teamname if team.owner else f"Team {team.id}",
                 'player_id': player_id,
                 'player_name': player.full_name if player else f"Unknown Player {player_id}",
-                'issue': "Player in Sleeper roster but not in database"
+                'issue': "Player in Sleeper roster but not in database",
+                'roster_player_id': None  # Explicitly set to None for consistency
             })
 
     # Step 4: Render results

@@ -3,52 +3,46 @@
 {% block content %}
 
 {% for message in get_flashed_messages() %}
-	<div class="alert alert-warning alert-dismissible fade show" role="alert">
-	  {{ message }}
-	  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-	</div>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 {% endfor %}
 
 <br>
 <h1>Search Results</h1>
 
-<strong>Search Term:</strong>  <i>{{ searched }}</i>
+<strong>Search Term:</strong> <i>{{ searched }}</i>
 
 <br><br>
 
-
-
 {% if players %}
 <table class="table table-hover table-striped table-sm">
-	<thead class="table-dark">
-	  <tr>
-		<th scope="col">Id</th>
-		<th scope="col">First</th>
-		<th scope="col">Last</th>
-		<th scope="col">Position</th>
-	  </tr>
-	</thead>
-	<tbody>
-
-	{% for player in players %}
-
-
-	  <tr>
-		<th scope="row">{{player.id}}</th>
-		<td>{{player.first_name}}</td>
-		<td>{{player.last_name}}</td>
-		<td>{{player.position}}</td>
-	  </tr>
-
-	  {% endfor %}
-	  
-	</tbody>
-  </table>
-
-  {% else %}
-  <em>No results found.</em>
-
-  {% endif %}
-
+    <thead class="table-dark">
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">First</th>
+            <th scope="col">Last</th>
+            <th scope="col">Position</th>
+            <th scope="col">Team</th>
+            <th scope="col">Salary</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for player, roster_player, team in players %}
+        <tr>
+            <th scope="row">{{ player.id }}</th>
+            <td>{{ player.first_name }}</td>
+            <td>{{ player.last_name }}</td>
+            <td>{{ player.position }}</td>
+            <td>{{ team.owner.teamname if team.owner else 'No Team' }}</td>
+            <td>{{ roster_player.salary if roster_player else 'N/A' }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<em>No results found.</em>
+{% endif %}
 
 {% endblock %}

@@ -1868,22 +1868,28 @@ def base():
     return dict(form=form, alist=alist, dropdown_teams = teams)
 
 
-#search function
 @app.route('/search', methods=["POST"])
 def search():
     form = SearchForm()
-    players = Player.query
     if form.validate_on_submit():
         searched = form.searched.data
-        #search for matching name
+        # Search for matching name
         search_string = searched.replace(" ", "").lower()
         print(search_string)
 
-        players = players.filter(Player.search_full_name.like('%' + search_string + '%'))
-        players = players.order_by(Player.last_name).all()
+        # Query players with active roster information
+        current_season = 2025  # Replace with GetCurrentSeason() if defined
+        players = db.session.query(Player, RosterPlayer, Team).join(
+            RosterPlayer, (Player.id == RosterPlayer.player_id) & 
+                          (RosterPlayer.date_removed.is_(None)) & 
+                          (RosterPlayer.season == current_season)
+        ).join(
+            Team, RosterPlayer.team_id == Team.id
+        ).filter(
+            Player.search_full_name.like('%' + search_string + '%')
+        ).order_by(Player.last_name).all()
 
-        return render_template("search_results.html", form=form, searched = searched, players = players)
-
+        return render_template("search_results.html", form=form, searched=searched, players=players)
 
 @app.route('/transactions/')
 def process_transactions(source="Process Transactions", method = "all"):

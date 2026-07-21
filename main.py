@@ -119,13 +119,14 @@ Sport = "nfl"
 # LeagueId = "986829727832805376" # 2023
 # LeagueId = "1111386461611593728" # 2024
 LeagueId = "1219121675715485696" # 2025
+# LeagueId = "" # 2026
 
 #setup urls for API calls
 user_url = f'https://api.sleeper.app/v1/user/{UserId}'
 league_users_url = f'https://api.sleeper.app/v1/league/{LeagueId}/users'
 rosters_url = f'https://api.sleeper.app/v1/league/{LeagueId}/rosters'
 # players_url = 'https://api.sleeper.app/v1/players/nfl'
-current_season = 2025
+current_season = 2026
 caphold_multiplier = Decimal("0.3")
 year_over_year_multiplier = Decimal("1.1")
 drop_cap_hold_stop = date.fromisoformat('2024-03-01')
@@ -1878,7 +1879,7 @@ def search():
         print(search_string)
 
         # Query players with active roster information
-        current_season = 2025  # Replace with GetCurrentSeason() if defined
+        current_season = 2026  # Replace with GetCurrentSeason() if defined
         players = db.session.query(Player, RosterPlayer, Team).join(
             RosterPlayer, (Player.id == RosterPlayer.player_id) & 
                           (RosterPlayer.date_removed.is_(None)) & 

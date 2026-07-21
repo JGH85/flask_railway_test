@@ -118,8 +118,8 @@ Sport = "nfl"
 # LeagueId = "859990766557179904" # 2022  
 # LeagueId = "986829727832805376" # 2023
 # LeagueId = "1111386461611593728" # 2024
-LeagueId = "1219121675715485696" # 2025
-# LeagueId = "" # 2026
+# LeagueId = "1219121675715485696" # 2025
+LeagueId = "1353458056133873664" # 2026
 
 #setup urls for API calls
 user_url = f'https://api.sleeper.app/v1/user/{UserId}'

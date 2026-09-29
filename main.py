@@ -1990,6 +1990,11 @@ def process_transactions(source="Process Transactions", method = "all"):
                 transaction_type = t['type']
                 roster_id = t['roster_ids'][0]
                 tid = t['transaction_id']
+                try:
+                    tid = int(tid)
+                except (TypeError, ValueError):
+                    print(f"transaction_id {tid} not valid.")
+                    continue
 
                 # if tid == '875193377745268736' or tid == 875193377745268736:
                 #     print('------------------------------------------------------------------------------------------------------------------------------')
@@ -2029,9 +2034,15 @@ def process_transactions(source="Process Transactions", method = "all"):
                         #handle waiver pickups
                         if transaction_type == 'waiver':
                             added_player_id = list(t['adds'].keys())[0]
-                            added_player = Player.query.filter_by(id=added_player_id).first()
+                            try:
+                                added_player_id = int(added_player_id)
+                            except (TypeError, ValueError):
+                                print(f"added_player_id {added_player_id} not valid.")  # dsts etc.
+                                added_player_id = None
+                            added_player = Player.query.filter_by(id=added_player_id).first() if added_player_id else None
                             if added_player == None:
-                                missing_player_ids.append(added_player_id)
+                                if added_player_id:
+                                    missing_player_ids.append(added_player_id)
                             else:                                
                                 # print(t['settings'])
                                 if (t['settings'] != None):
@@ -2151,7 +2162,12 @@ def process_transactions(source="Process Transactions", method = "all"):
                                         trade_partners_adds[trade_roster_id] = [i]
 
                                     #get salaries for adds
-                                    rp = RosterPlayer.query.filter(RosterPlayer.player_id == i, RosterPlayer.date_removed.is_(None)).first()
+                                    try:
+                                        pid = int(i)
+                                    except (TypeError, ValueError):
+                                        print(f"trade added player_id {i} not valid.")
+                                        continue
+                                    rp = RosterPlayer.query.filter(RosterPlayer.player_id == pid, RosterPlayer.date_removed.is_(None)).first()
                                     if rp != None:
                                         salary = 0
                                         if rp.is_franchised:
@@ -2198,7 +2214,12 @@ def process_transactions(source="Process Transactions", method = "all"):
                             #drop all players in dropped players
                                 for i in dropped_players.keys():
                                     roster_id = dropped_players[i]
-                                    rp = RosterPlayer.query.filter(RosterPlayer.player_id == i, RosterPlayer.team_id == roster_id, RosterPlayer.date_removed.is_(None)).first()
+                                    try:
+                                        pid = int(i)
+                                    except (TypeError, ValueError):
+                                        print(f"trade dropped player_id {i} not valid.")
+                                        continue
+                                    rp = RosterPlayer.query.filter(RosterPlayer.player_id == pid, RosterPlayer.team_id == roster_id, RosterPlayer.date_removed.is_(None)).first()
                                     if rp == None:
                                         e = ErrorLog()
                                         e.transaction_id = tid
@@ -2218,8 +2239,13 @@ def process_transactions(source="Process Transactions", method = "all"):
                                 #add all players in added players
                                 for i in added_players.keys():
                                     roster_id = added_players[i]
+                                    try:
+                                        pid = int(i)
+                                    except (TypeError, ValueError):
+                                        print(f"trade added player_id {i} not valid.")
+                                        continue
                                     rp = RosterPlayer()
-                                    rp.player_id = i
+                                    rp.player_id = pid
                                     rp.team_id = roster_id
                                     rp.season = MySys.current_season
                                     rp.open_transaction_id = tid

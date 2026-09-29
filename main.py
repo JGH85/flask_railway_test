@@ -1049,16 +1049,23 @@ def view_all_transactions():
     # update_roster_ir_and_taxi()
     all_transactions = Transactions.query.filter().order_by(Transactions.id.desc()).all()
     player_ids = set()
+    roster_ids = set()
     for t in all_transactions:
         if t.dropped_player_id:
             player_ids.add(t.dropped_player_id)
         if t.added_player_id:
             player_ids.add(t.added_player_id)
+        if t.roster_id:
+            roster_ids.add(t.roster_id)
     player_names = {}
     if player_ids:
         players = Player.query.filter(Player.id.in_(player_ids)).all()
         player_names = {p.id: p.full_name for p in players}
-    return render_template('transactions.html', transactions=all_transactions, player_names=player_names)
+    team_names = {}
+    if roster_ids:
+        teams = Team.query.filter(Team.id.in_(roster_ids)).all()
+        team_names = {team.id: team.owner.teamname for team in teams if team.owner}
+    return render_template('transactions.html', transactions=all_transactions, player_names=player_names, team_names=team_names)
 
 
 # @app.route('/rosters/<int:id>')

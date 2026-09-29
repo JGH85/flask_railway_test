@@ -53,7 +53,17 @@
 		<td>{{t.transaction_type}}</td>
 
 		<td>{{t.season}}</td>
-		<td>{{t.roster_id}}</td>
+		<td>
+			{% if t.roster_id %}
+				{% if team_names.get(t.roster_id) %}
+					{{ team_names.get(t.roster_id) }} ({{ t.roster_id }})
+				{% else %}
+					{{ t.roster_id }}
+				{% endif %}
+			{% else %}
+				None
+			{% endif %}
+		</td>
 		<td>
 			{% if t.dropped_player_id %}
 				{% if player_names.get(t.dropped_player_id) %}

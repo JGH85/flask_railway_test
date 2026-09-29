@@ -54,8 +54,28 @@
 
 		<td>{{t.season}}</td>
 		<td>{{t.roster_id}}</td>
-		<td>{{t.dropped_player_id}}</td>
-		<td>{{t.added_player_id}}</td>
+		<td>
+			{% if t.dropped_player_id %}
+				{% if player_names.get(t.dropped_player_id) %}
+					{{ player_names.get(t.dropped_player_id) }} ({{ t.dropped_player_id }})
+				{% else %}
+					{{ t.dropped_player_id }}
+				{% endif %}
+			{% else %}
+				None
+			{% endif %}
+		</td>
+		<td>
+			{% if t.added_player_id %}
+				{% if player_names.get(t.added_player_id) %}
+					{{ player_names.get(t.added_player_id) }} ({{ t.added_player_id }})
+				{% else %}
+					{{ t.added_player_id }}
+				{% endif %}
+			{% else %}
+				None
+			{% endif %}
+		</td>
 		<td>{{t.transaction_date}}</td>
 
 		{% if current_user.id in alist %}

@@ -1047,8 +1047,18 @@ def view_roster_history(id):
 @app.route('/transactionsall/')
 def view_all_transactions():
     # update_roster_ir_and_taxi()
-    all_transactions = Transactions.query.filter().order_by(Transactions.id.desc())
-    return render_template('transactions.html', transactions = all_transactions)
+    all_transactions = Transactions.query.filter().order_by(Transactions.id.desc()).all()
+    player_ids = set()
+    for t in all_transactions:
+        if t.dropped_player_id:
+            player_ids.add(t.dropped_player_id)
+        if t.added_player_id:
+            player_ids.add(t.added_player_id)
+    player_names = {}
+    if player_ids:
+        players = Player.query.filter(Player.id.in_(player_ids)).all()
+        player_names = {p.id: p.full_name for p in players}
+    return render_template('transactions.html', transactions=all_transactions, player_names=player_names)
 
 
 # @app.route('/rosters/<int:id>')

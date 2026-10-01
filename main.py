@@ -383,10 +383,15 @@ def update_active_players():
     #add status logic
     for id in player_id_list:  
         if (players[id]['position'] in position_list) and (players[id]['search_rank'] != 9999999) and (players[id]['active'] == True) and (added_player_count < 5000): 
-            p = Player.query.filter_by(id=id).first()
+            try:
+                pid = int(id)
+            except (TypeError, ValueError):
+                print(f"player_id {id} not valid.")  # dsts etc.
+                continue
+            p = Player.query.filter_by(id=pid).first()
             if p == None:
                 p = Player()
-            p.id = players[id]['player_id']
+            p.id = pid
             p.search_full_name = players[id]['search_full_name']
             p.search_last_name = players[id]['search_last_name']
             p.search_first_name = players[id]['search_first_name']
@@ -532,6 +537,11 @@ def update_taxi(method="all"):
                 taxi_ids = r['taxi']
             if taxi_ids:
                 for taxi in taxi_ids:
+                    try:
+                        taxi = int(taxi)
+                    except (TypeError, ValueError):
+                        print(f"taxi player_id {taxi} not valid.")  # dsts etc.
+                        continue
                     # p = Player.query.filter_by(id=taxi).first()
                     # t = Team.query.filter_by(id=roster_id).first()
                     # flash(f'Team:{t.owner.teamname}, IR:{p.full_name}')
@@ -585,6 +595,11 @@ def update_roster_ir(method="all"):
         if r['reserve'] != None:
             reserve_id = r['reserve'][0]
         if reserve_id:
+            try:
+                reserve_id = int(reserve_id)
+            except (TypeError, ValueError):
+                print(f"reserve_id {reserve_id} not valid.")  # dsts etc.
+                continue
             p = Player.query.filter_by(id=reserve_id).first()
             t = Team.query.filter_by(id=roster_id).first()
             # flash(f'Team:{t.owner.teamname}, IR:{p.full_name}')
@@ -2353,17 +2368,22 @@ def process_rookie_draft():
     #for each draft pick, check if already rostered. if so skip and throw error
     for i in rookies:
         #check if player exists, if not Matthew just put in a dummy player and skip
-        p = Player.query.filter_by(id=i['player_id']).first()
+        try:
+            rook_pid = int(i['player_id'])
+        except (TypeError, ValueError):
+            print(f"rookie player_id {i.get('player_id')} not valid.")
+            continue
+        p = Player.query.filter_by(id=rook_pid).first()
         if p == None:
             print(f"skipping rookie: {i}")
             continue #stop processing and go to next
         
         print(f"processing player Name: {p.full_name}, i: {i}")
 
-        rp = RosterPlayer.query.filter(RosterPlayer.player_id == i['player_id']).first()
+        rp = RosterPlayer.query.filter(RosterPlayer.player_id == rook_pid).first()
         if rp == None:
             rp = RosterPlayer()
-            rp.player_id = i['player_id']
+            rp.player_id = rook_pid
             
 
 
@@ -2451,10 +2471,15 @@ def process_auction_draft():
     #for each draft pick, check if already rostered. if so skip and throw error
     for i in auction:
         if i['metadata']['position'] in ('QB', 'RB', 'WR', 'TE', 'K'):
-            rp = RosterPlayer.query.filter(RosterPlayer.player_id == i['player_id'], RosterPlayer.date_removed.is_(None)).first()
+            try:
+                auc_pid = int(i['player_id'])
+            except (TypeError, ValueError):
+                print(f"auction player_id {i.get('player_id')} not valid.")
+                continue
+            rp = RosterPlayer.query.filter(RosterPlayer.player_id == auc_pid, RosterPlayer.date_removed.is_(None)).first()
             if rp == None:
                 rp = RosterPlayer()
-                rp.player_id = i['player_id']
+                rp.player_id = auc_pid
                 salary = i['metadata']['amount']
 
                 # rp.team_id = GetTeamIdbyOwnerId(i['picked_by'])
